@@ -54,11 +54,12 @@ export async function GET(request: Request) {
         name: profile.name || "Google User",
         email,
         googleId,
+        emailVerifiedAt: new Date(),
         password: randomBytes(32).toString("hex"),
       },
     });
   } else if (!user.googleId) {
-    user = await prisma.user.update({ where: { id: user.id }, data: { googleId } });
+    user = await prisma.user.update({ where: { id: user.id }, data: { googleId, emailVerifiedAt: new Date() } });
   }
 
   await createSession(user.id);
