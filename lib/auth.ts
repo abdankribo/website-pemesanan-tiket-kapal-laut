@@ -4,7 +4,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { prisma } from "@/lib/prisma";
 
 const COOKIE = "sm_session";
-const MAX_AGE = 10 * 60;
+const MAX_AGE = 2 * 60 * 60;
 const secret = new TextEncoder().encode(process.env.AUTH_SECRET || "dev-only-change-me");
 
 export type SessionUser = {
