@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
+import { requireSameOrigin } from "@/lib/csrf";
 import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 
 function redirect(request:Request, query="sent=1") { return NextResponse.redirect(new URL("/forgot-password?"+query, request.url)); }
 
 export async function POST(request:Request) {
+  try { requireSameOrigin(request); } catch { return redirect(request); }
+
   const form=await request.formData();
   const email=String(form.get("email")||"").trim().toLowerCase();
   if(!/^\S+@\S+\.\S+$/.test(email)) return redirect(request);
