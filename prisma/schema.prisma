@@ -1,0 +1,58 @@
+generator client {
+  provider   = "prisma-client-js"
+  output     = "../generated/prisma"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int       @id @default(autoincrement())
+  name            String
+  email           String    @unique
+  googleId        String?   @unique @map("google_id")
+  emailVerifiedAt DateTime? @map("email_verified_at")
+  password        String
+  rememberToken    String?  @map("remember_token")
+  phone           String?
+  nik             String?
+  birthDate       DateTime? @map("birth_date") @db.Date
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  tickets         Ticket[]
+
+  @@map("users")
+}
+
+model PasswordResetToken {
+  email     String   @id
+  token     String
+  createdAt DateTime? @map("created_at")
+
+  @@map("password_reset_tokens")
+}
+
+model Ticket {
+  id            Int       @id @default(autoincrement())
+  userId        Int?      @map("user_id")
+  ticketId      String    @unique @map("ticket_id") @db.Uuid
+  passengerName String    @map("passenger_name")
+  passengerNik  String    @map("passenger_nik")
+  passengerPhone String   @map("passenger_phone")
+  origin        String
+  destination   String
+  departureDate DateTime  @map("departure_date") @db.Date
+  vehicle       String?
+  vehiclePlate  String?   @map("vehicle_plate")
+  status        String    @default("booked")
+  scannedAt     DateTime? @map("scanned_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@map("tickets")
+}
