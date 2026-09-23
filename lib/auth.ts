@@ -5,7 +5,11 @@ import { prisma } from "@/lib/prisma";
 
 const COOKIE = "sm_session";
 const MAX_AGE = 2 * 60 * 60;
-const secret = new TextEncoder().encode(process.env.AUTH_SECRET || "dev-only-change-me");
+const authSecret = process.env.AUTH_SECRET;
+if (!authSecret || authSecret.length < 32) {
+  throw new Error("AUTH_SECRET must be configured with at least 32 characters.");
+}
+const secret = new TextEncoder().encode(authSecret);
 
 export type SessionUser = {
   id: number;
@@ -39,7 +43,7 @@ export async function refreshSession(userId: number) {
 
 export async function destroySession() {
   const store = await cookies();
-  store.set(COOKIE, "", { httpOnly: true, expires: new Date(0), path: "/" });
+  store.set(COOKIE, "", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", expires: new Date(0), path: "/" });
 }
 
 export async function getCurrentUser(): Promise<SessionUser | null> {
