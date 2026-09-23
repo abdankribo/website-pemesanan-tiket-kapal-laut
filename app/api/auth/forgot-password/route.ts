@@ -23,7 +23,7 @@ export async function POST(request:Request) {
 
   const base=(process.env.NEXT_PUBLIC_APP_URL||new URL(request.url).origin).replace(/\/$/,"");
   const resetUrl=`${base}/reset-password?token=${raw}&email=${encodeURIComponent(email)}`;
-  if(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL){
+  if(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL || process.env.MAIL_FROM){
     await fetch("https://api.resend.com/emails",{method:"POST",headers:{"Authorization":`Bearer ${process.env.RESEND_API_KEY}`,"Content-Type":"application/json"},body:JSON.stringify({from:process.env.RESEND_FROM_EMAIL,to:[email],subject:"Reset Password Surabaya-Madura",html:`<p>Gunakan link berikut untuk mengubah password Anda:</p><p><a href="${resetUrl}">Reset Password</a></p><p>Link berlaku 1 jam.</p>`})});
   }
   return redirect(request);
