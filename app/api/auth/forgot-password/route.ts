@@ -23,8 +23,19 @@ export async function POST(request:Request) {
 
   const base=(process.env.NEXT_PUBLIC_APP_URL||new URL(request.url).origin).replace(/\/$/,"");
   const resetUrl=`${base}/reset-password?token=${raw}&email=${encodeURIComponent(email)}`;
-  if(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL || process.env.MAIL_FROM){
-    await fetch("https://api.resend.com/emails",{method:"POST",headers:{"Authorization":`Bearer ${process.env.RESEND_API_KEY}`,"Content-Type":"application/json"},body:JSON.stringify({from:process.env.RESEND_FROM_EMAIL,to:[email],subject:"Reset Password Surabaya-Madura",html:`<p>Gunakan link berikut untuk mengubah password Anda:</p><p><a href="${resetUrl}">Reset Password</a></p><p>Link berlaku 1 jam.</p>`})});
+  const resendKey = process.env.RESEND_API_KEY;
+  const sender = process.env.RESEND_FROM_EMAIL || process.env.MAIL_FROM;
+  if (resendKey && sender) {
+    try {
+      const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ from: sender, to: [email], subject: "Reset Password Surabaya-Madura", html: `<p>Gunakan link berikut untuk mengubah password Anda:</p><p><a href="${resetUrl}">Reset Password</a></p><p>Link berlaku 1 jam.</p>` }),
+      });
+      if (!response.ok) console.error("Password reset email failed:", await response.text());
+    } catch (error) {
+      console.error("Password reset email request failed:", error);
+    }
   }
   return redirect(request);
 }
