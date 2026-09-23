@@ -19,7 +19,7 @@ export default async function TicketPage({searchParams}:{searchParams:Promise<{t
   return <main className="min-h-screen bg-surface px-4 py-10 pb-24"><div className="mx-auto max-w-lg">
     <div className="rounded-3xl bg-primary p-6 text-white shadow-xl">
       <p className="text-xs uppercase tracking-[.3em] text-blue-200">Your Boarding Pass</p>
-      <h1 className="mt-2 text-3xl font-black">Surabaya → Madura</h1>
+      <h1 className="mt-2 text-3xl font-black">{ticket.origin} → {ticket.destination}</h1>
       <div className="mt-8 grid grid-cols-2 gap-5 text-sm">
         <div><span className="text-blue-200">Passenger</span><b className="block">{ticket.passengerName}</b></div>
         <div><span className="text-blue-200">Departure</span><b className="block">{ticket.departureDate.toLocaleDateString("id-ID")}</b></div>
