@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "");
 
-  if (!name || !/^\S+@\S+\.\S+$/.test(email) || password.length < 8) {
+  if (name.length > 100 || email.length > 254 || !name || !/^\S+@\S+\.\S+$/.test(email) || password.length < 8 || password.length > 128) {
     if (isJson) return NextResponse.json({ error: "Data pendaftaran tidak valid." }, { status: 400 });
     return NextResponse.redirect(new URL("/register?error=Data%20pendaftaran%20tidak%20valid", request.url));
   }
