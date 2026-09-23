@@ -80,6 +80,10 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
+      <nav className="fixed bottom-0 left-0 z-50 flex w-full justify-around rounded-t-3xl bg-white/90 px-4 pb-7 pt-3 shadow-[0_-8px_24px_-2px_rgba(25,28,30,0.08)] backdrop-blur-2xl md:hidden">
+        <Link href="/" className="flex flex-col items-center rounded-2xl bg-blue-50 px-5 py-2 text-primary"><span className="material-symbols-outlined">explore</span><span className="text-[10px] font-bold uppercase tracking-widest">Explore</span></Link>
+        <Link href="/account" className="flex flex-col items-center px-5 py-2 text-slate-400"><span className="material-symbols-outlined">person</span><span className="text-[10px] font-bold uppercase tracking-widest">Account</span></Link>
+      </nav>
     </div>
   );
 }
