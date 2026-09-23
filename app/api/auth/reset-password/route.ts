@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
+import { requireSameOrigin } from "@/lib/csrf";
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request:Request) {
+  try { requireSameOrigin(request); } catch { return NextResponse.redirect(new URL("/login?error=reset_invalid",request.url)); }
+
   const form=await request.formData();
   const email=String(form.get("email")||"").trim().toLowerCase();
   const raw=String(form.get("token")||"");
