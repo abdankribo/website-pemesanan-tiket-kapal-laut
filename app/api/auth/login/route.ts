@@ -8,7 +8,14 @@ export async function POST(request: Request) {
   try { requireSameOrigin(request); } catch { return NextResponse.json({ error: "Permintaan tidak valid." }, { status: 403 }); }
 
   const isJson = request.headers.get("content-type")?.includes("application/json");
-  const body = isJson ? await request.json() : Object.fromEntries(await request.formData());
+  let body: Record<string, unknown>;
+  try {
+    body = isJson ? await request.json() : Object.fromEntries(await request.formData());
+  } catch {
+    return isJson
+      ? NextResponse.json({ error: "Payload tidak valid." }, { status: 400 })
+      : NextResponse.redirect(new URL("/login?error=Permintaan%20tidak%20valid", request.url));
+  }
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "");
   if (email.length > 254 || password.length > 128) return isJson ? NextResponse.json({ error: "Email atau password salah." }, { status: 401 }) : NextResponse.redirect(new URL("/login?error=Email%20atau%20password%20salah", request.url));
