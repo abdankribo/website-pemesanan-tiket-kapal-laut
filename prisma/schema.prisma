@@ -23,6 +23,7 @@ model User {
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
   tickets         Ticket[]
+  bookingDrafts   BookingDraft[]
 
   @@map("users")
 }
@@ -34,6 +35,19 @@ model PasswordResetToken {
   expiresAt DateTime? @map("expires_at")
 
   @@map("password_reset_tokens")
+}
+
+model BookingDraft {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       Int      @map("user_id")
+  payload      Json
+  paymentMethod String? @map("payment_method")
+  expiresAt    DateTime @map("expires_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@map("booking_drafts")
 }
 
 model Ticket {
