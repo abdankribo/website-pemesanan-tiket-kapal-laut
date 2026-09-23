@@ -11,8 +11,8 @@ export default function LandingPage() {
             <span className="text-sm uppercase tracking-tight sm:text-lg">Surabaya-Madura</span>
           </Link>
           <div className="flex items-center gap-2">
-            <Link href="/login" className="rounded-full px-4 py-2 text-sm font-bold text-primary hover:bg-slate-100">Login</Link>
-            <Link href="/register" className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-container">Register</Link>
+            <Link href="/login" className="hidden rounded-full px-4 py-2 text-sm font-bold text-primary hover:bg-slate-100 sm:block">Login</Link>
+            <Link href="/register" className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-container">Book Now</Link>
           </div>
         </div>
       </header>
@@ -20,21 +20,23 @@ export default function LandingPage() {
       <main className="pt-24">
         <section className="relative min-h-[580px] overflow-hidden bg-primary">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(37,99,235,.45),transparent_40%)]" />
-          <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2">
-            <div className="text-white">
-              <p className="mb-4 text-xs font-black uppercase tracking-[.3em] text-primary-fixed-dim">Fast • Simple • Digital</p>
-              <h1 className="text-5xl font-black tracking-tight sm:text-7xl">Cross the Strait.<br /><span className="text-secondary-container">Simply.</span></h1>
-              <p className="mt-6 max-w-xl text-base leading-7 text-blue-100 sm:text-lg">Pesan tiket kapal Surabaya-Madura secara digital, pilih layanan penumpang atau kendaraan, lalu gunakan tiket QR untuk proses check-in.</p>
+          <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6">
+            <div className="max-w-2xl text-white">
+              <span className="mb-5 inline-block rounded-full bg-secondary-container px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-[#2f1500]">Maritime Excellence</span>
+              <h1 className="text-4xl font-extrabold leading-none tracking-tighter sm:text-5xl md:text-7xl">Bridging the<br /><span className="italic text-primary-fixed-dim">Madura Strait.</span></h1>
+              <p className="mt-5 max-w-md text-base font-light leading-relaxed text-primary-fixed sm:text-lg">Premium ferry services connecting Ujung Port and Kamal Port with simple digital booking and QR boarding.</p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/login" className="rounded-xl bg-secondary-container px-6 py-4 text-sm font-black uppercase tracking-widest text-primary">Book a Ticket</Link>
                 <Link href="/register" className="rounded-xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-bold text-white backdrop-blur">Create Account</Link>
               </div>
             </div>
-            <div className="rounded-[2rem] bg-white p-3 shadow-2xl">
-              <SearchForm />
-            </div>
+            
           </div>
         </section>
+
+      <main className="relative z-20 mx-auto -mt-24 max-w-7xl px-4 sm:-mt-32 sm:px-6">
+        <SearchForm />
+      </main>
 
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
           <h2 className="text-2xl font-black tracking-tight text-primary sm:text-3xl">Premium Experience</h2>
