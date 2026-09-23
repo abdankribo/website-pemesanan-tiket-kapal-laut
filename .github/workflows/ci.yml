@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/tickets
-      AUTH_SECRET: ci-only-secret-change-me
+      AUTH_SECRET: ci-only-secret-change-me-32-characters-minimum
       NEXT_PUBLIC_APP_URL: http://localhost:3000
     services:
       postgres:
