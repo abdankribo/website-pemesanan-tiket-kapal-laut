@@ -1,9 +1,12 @@
 import { compare } from "bcryptjs";
 import { NextResponse } from "next/server";
+import { requireSameOrigin } from "@/lib/csrf";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
 
 export async function POST(request: Request) {
+  try { requireSameOrigin(request); } catch { return NextResponse.json({ error: "Permintaan tidak valid." }, { status: 403 }); }
+
   const isJson = request.headers.get("content-type")?.includes("application/json");
   const body = isJson ? await request.json() : Object.fromEntries(await request.formData());
   const email = String(body.email || "").trim().toLowerCase();
