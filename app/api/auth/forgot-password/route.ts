@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireSameOrigin } from "@/lib/csrf";
 import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 function redirect(request:Request, query="sent=1") { return NextResponse.redirect(new URL("/forgot-password?"+query, request.url)); }
 
@@ -11,6 +12,7 @@ export async function POST(request:Request) {
   const form=await request.formData();
   const email=String(form.get("email")||"").trim().toLowerCase();
   if(!/^\S+@\S+\.\S+$/.test(email)) return redirect(request);
+  if(!(await checkRateLimit(request, "forgot-password", email, 5, 60 * 60 * 1000))) return redirect(request);
 
   const user=await prisma.user.findUnique({where:{email}});
   if(!user) return redirect(request);
