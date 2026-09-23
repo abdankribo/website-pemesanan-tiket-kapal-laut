@@ -1,11 +1,14 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
+import { requireSameOrigin } from "@/lib/csrf";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
 const METHODS = new Set(["mandiri", "bca", "gopay"]);
 
 export async function POST(request: Request) {
+  requireSameOrigin(request);
+
   const user = await getCurrentUser();
   if (!user) return NextResponse.redirect(new URL("/login", request.url));
 
