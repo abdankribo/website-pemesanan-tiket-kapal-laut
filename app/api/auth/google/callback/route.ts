@@ -35,9 +35,14 @@ export async function GET(request: Request) {
   const token = (await tokenResponse.json()) as GoogleToken;
   if (!token.access_token) return NextResponse.redirect(new URL("/login?error=Token%20Google%20tidak%20tersedia", request.url));
 
-  const userResponse = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
-    headers: { Authorization: `Bearer ${token.access_token}` },
-  });
+  let userResponse: Response;
+  try {
+    userResponse = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
+      headers: { Authorization: `Bearer ${token.access_token}` },
+    });
+  } catch {
+    return NextResponse.redirect(new URL("/login?error=Profil%20Google%20tidak%20dapat%20dibaca", request.url));
+  }
   if (!userResponse.ok) return NextResponse.redirect(new URL("/login?error=Profil%20Google%20tidak%20dapat%20dibaca", request.url));
 
   const profile = (await userResponse.json()) as GoogleUser;
