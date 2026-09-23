@@ -3,6 +3,23 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function AccountPage(){
- const user=await getCurrentUser(); if(!user) redirect("/login");
- return <main className="min-h-screen bg-surface px-4 py-10"><div className="mx-auto max-w-xl"><div className="flex items-center justify-between"><div><p className="text-xs font-bold uppercase tracking-[.3em] text-secondary">Account</p><h1 className="text-3xl font-black text-primary">Your Profile</h1></div><Link href="/my-tickets" className="rounded-xl bg-secondary px-4 py-2 text-sm font-bold text-white">My Tickets</Link></div><div className="mt-8 rounded-3xl bg-white p-6 shadow-sm"><dl className="space-y-4 text-sm"><div><dt className="text-slate-500">Nama</dt><dd className="font-bold">{user.name}</dd></div><div><dt className="text-slate-500">Email</dt><dd className="font-bold">{user.email}</dd></div><div><dt className="text-slate-500">Nomor HP</dt><dd className="font-bold">{user.phone||"Belum diisi"}</dd></div><div><dt className="text-slate-500">NIK</dt><dd className="font-bold">{user.nik||"Belum diisi"}</dd></div><div><dt className="text-slate-500">Tanggal lahir</dt><dd className="font-bold">{user.birthDate?.toLocaleDateString("id-ID")||"Belum diisi"}</dd></div></dl><form action="/api/auth/logout" method="POST" className="mt-8"><button className="rounded-xl border border-red-200 px-5 py-3 text-sm font-bold text-red-700">Logout</button></form></div></div></main>;
+  const user=await getCurrentUser();
+  if(!user) redirect("/login");
+  return <main className="min-h-screen bg-surface px-4 py-10 pb-24"><div className="mx-auto max-w-xl">
+    <div className="flex items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.3em] text-secondary">Account</p><h1 className="text-3xl font-black text-primary">Your Profile</h1></div><Link href="/my-tickets" className="rounded-xl bg-secondary px-4 py-2 text-sm font-bold text-white">My Tickets</Link></div>
+    <div className="mt-8 rounded-3xl bg-white p-6 shadow-sm">
+      <form action="/api/profile/update" method="POST" className="space-y-4">
+        <label className="block text-sm font-semibold">Nama<input name="name" defaultValue={user.name} required maxLength={100} className="input mt-2"/></label>
+        <label className="block text-sm font-semibold">Email<input name="email" type="email" defaultValue={user.email} required maxLength={150} className="input mt-2"/></label>
+        <label className="block text-sm font-semibold">Nomor HP<input name="phone" inputMode="numeric" defaultValue={user.phone||""} placeholder="08xxxxxxxxxx" required className="input mt-2"/></label>
+        <label className="block text-sm font-semibold">NIK<input name="nik" inputMode="numeric" maxLength={16} defaultValue={user.nik||""} placeholder="16 digit" required className="input mt-2"/></label>
+        <label className="block text-sm font-semibold">Tanggal lahir<input name="birth_date" type="date" defaultValue={user.birthDate?user.birthDate.toISOString().slice(0,10):""} required className="input mt-2"/></label>
+        <button className="w-full rounded-xl bg-primary px-5 py-3 font-bold text-white">Simpan Profil</button>
+      </form>
+      <form action="/api/profile/clear" method="POST" className="mt-4" onSubmit={(e)=>{if(!confirm("Kosongkan data profil dan hapus semua tiket Anda?")) e.preventDefault();}}>
+        <button className="w-full rounded-xl border border-red-200 px-5 py-3 text-sm font-bold text-red-700">Kosongkan Data Profil</button>
+      </form>
+      <form action="/api/auth/logout" method="POST" className="mt-4"><button className="w-full rounded-xl border border-slate-200 px-5 py-3 text-sm font-bold">Logout</button></form>
+    </div>
+  </div></main>;
 }
