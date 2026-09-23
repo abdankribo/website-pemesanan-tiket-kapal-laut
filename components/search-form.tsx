@@ -18,7 +18,7 @@ export default function SearchForm() {
     if (!date || date < today) return setError("Tanggal keberangkatan tidak valid.");
     setError("");
     const q = new URLSearchParams({ origin, destination, departureDate: date, serviceType });
-    router.push(`/booking?${q.toString()}`);
+    router.push(`/api/search?${q.toString()}`);
   }
 
   return (
