@@ -7,7 +7,7 @@ import { getCurrentUser } from "@/lib/auth";
 const METHODS = new Set(["mandiri", "bca", "gopay"]);
 
 export async function POST(request: Request) {
-  requireSameOrigin(request);
+  try { requireSameOrigin(request); } catch { return NextResponse.redirect(new URL("/payment?error=invalid", request.url)); }
 
   const user = await getCurrentUser();
   if (!user) return NextResponse.redirect(new URL("/login", request.url));
