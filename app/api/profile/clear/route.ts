@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireSameOrigin } from "@/lib/csrf";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
