@@ -37,10 +37,11 @@ export async function POST(request: Request) {
 
   try {
     const ticket = await prisma.$transaction(async (tx) => {
-      const lockedDraft = await tx.bookingDraft.update({
-        where: { id: draft.id },
-        data: { paymentMethod: method },
+      const claimed = await tx.bookingDraft.deleteMany({
+        where: { id: draft.id, userId: user.id, expiresAt: { gt: new Date() } },
       });
+      if (claimed.count !== 1) throw new Error("DRAFT_ALREADY_CONSUMED");
+      const lockedDraft = draft;
 
       const payload = lockedDraft.payload as Record<string, unknown>;
       const created = await tx.ticket.create({
@@ -59,7 +60,6 @@ export async function POST(request: Request) {
         },
       });
 
-      await tx.bookingDraft.delete({ where: { id: lockedDraft.id } });
       return created;
     });
 
