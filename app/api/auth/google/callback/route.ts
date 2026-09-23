@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
 import { randomBytes } from "crypto";
 
 type GoogleToken = { access_token?: string; id_token?: string };
-type GoogleUser = { sub?: string; email?: string; name?: string };
+type GoogleUser = { sub?: string; email?: string; name?: string; email_verified?: boolean };
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
-  const stateCookie = request.headers.get("cookie")?.match(/(?:^|; )google_oauth_state=([^;]+)/)?.[1];
+  const stateCookie = (await cookies()).get("google_oauth_state")?.value;
 
   if (!code || !state || !stateCookie || state !== decodeURIComponent(stateCookie)) {
     return NextResponse.redirect(new URL("/login?error=OAuth%20state%20tidak%20valid", request.url));
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
   if (!clientId || !clientSecret) return NextResponse.redirect(new URL("/login?error=Google%20OAuth%20belum%20dikonfigurasi", request.url));
 
-  const callback = new URL("/api/auth/google/callback", request.url);
+  const callback = new URL(process.env.GOOGLE_REDIRECT_URI || "/api/auth/google/callback", request.url);
   const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -42,7 +43,7 @@ export async function GET(request: Request) {
   const profile = (await userResponse.json()) as GoogleUser;
   const googleId = String(profile.sub || "");
   const email = String(profile.email || "").trim().toLowerCase();
-  if (!googleId || !email) return NextResponse.redirect(new URL("/login?error=Email%20Google%20tidak%20tersedia", request.url));
+  if (!googleId || !email || profile.email_verified !== true) return NextResponse.redirect(new URL("/login?error=Email%20Google%20tidak%20terverifikasi", request.url));
 
   let user = await prisma.user.findUnique({ where: { googleId } });
   if (!user) user = await prisma.user.findUnique({ where: { email } });
