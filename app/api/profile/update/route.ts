@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request:Request){
+  try { requireSameOrigin(request); } catch { return NextResponse.redirect(new URL("/account?error=invalid", request.url)); }
   const user=await getCurrentUser(); if(!user) return NextResponse.redirect(new URL("/login",request.url));
   const form=await request.formData();
   const name=String(form.get("name")||"").trim(), email=String(form.get("email")||"").trim().toLowerCase();
