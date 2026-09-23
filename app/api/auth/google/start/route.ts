@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   if (!clientId) return NextResponse.redirect(new URL("/login?error=Google%20OAuth%20belum%20dikonfigurasi", request.url));
 
   const state = randomUUID();
-  const callback = new URL("/api/auth/google/callback", request.url);
+  const callback = new URL(process.env.GOOGLE_REDIRECT_URI || "/api/auth/google/callback", request.url);
   const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
   url.searchParams.set("client_id", clientId);
   url.searchParams.set("redirect_uri", callback.toString());
