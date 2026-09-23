@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireSameOrigin } from "@/lib/csrf";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   try { requireSameOrigin(request); } catch { return NextResponse.json({ error: "Permintaan tidak valid." }, { status: 403 }); }
@@ -17,6 +18,9 @@ export async function POST(request: Request) {
       : NextResponse.redirect(new URL("/register?error=Permintaan%20tidak%20valid", request.url));
   }
   const name = String(body.name || "").trim();
+  if (!(await checkRateLimit(request, "register", String(body.email || "anonymous"), 5, 60 * 60 * 1000))) {
+    return isJson ? NextResponse.json({ error: "Terlalu banyak percobaan pendaftaran. Coba lagi nanti." }, { status: 429 }) : NextResponse.redirect(new URL("/register?error=Terlalu%20banyak%20percobaan", request.url));
+  }
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "");
 
