@@ -9,6 +9,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/tickets
+      AUTH_SECRET: ci-only-secret-change-me
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
     services:
       postgres:
         image: postgres:16
@@ -30,7 +34,3 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npm run build
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/tickets
-          AUTH_SECRET: ci-only-secret-change-me
-          NEXT_PUBLIC_APP_URL: http://localhost:3000
