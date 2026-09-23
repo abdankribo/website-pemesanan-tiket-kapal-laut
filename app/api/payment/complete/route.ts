@@ -12,7 +12,8 @@ export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.redirect(new URL("/login", request.url));
 
-  const form = await request.formData();
+  let form: FormData;
+  try { form = await request.formData(); } catch { return NextResponse.redirect(new URL("/payment?error=invalid", request.url)); }
   const method = String(form.get("payment_method") || "");
   const draftId = String(form.get("draft_id") || "");
 
