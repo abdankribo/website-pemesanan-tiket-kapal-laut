@@ -13,9 +13,10 @@ export async function POST(request:Request){
  const origin=String(b.origin||"").toLowerCase();
  const destination=String(b.destination||"").toLowerCase();
  const validRoute=(origin==="ujung"&&destination==="kamal")||(origin==="kamal"&&destination==="ujung");
- if(name.length>100||!name||!/^[0-9]{16}$/.test(nik)||!/^08\d{8,11}$/.test(phone)||!(vehicle in prices)||!validDate(String(b.departureDate))||((vehicle==="motor"||vehicle==="car")&&!/^[A-Z]{1,2} ?\d{4} ?[A-Z]+$/.test(plate))) return NextResponse.json({error:"Data booking tidak valid"},{status:400});
+ const serviceType=String(b.serviceType||"passenger");
+ if(name.length>100||!name||!/^[0-9]{16}$/.test(nik)||!/^08\d{8,11}$/.test(phone)||!(vehicle in prices)||!validDate(String(b.departureDate))||!["passenger","motor","car"].includes(serviceType)||((vehicle==="motor"||vehicle==="car")&&!/^[A-Z]{1,2} ?\d{4} ?[A-Z]+$/.test(plate))) return NextResponse.json({error:"Data booking tidak valid"},{status:400});
  const departure=new Date(String(b.departureDate)+"T00:00:00"); const today=new Date(); today.setHours(0,0,0,0);
  if(departure<today)return NextResponse.json({error:"Tanggal keberangkatan sudah lewat"},{status:400});
- const draft=await prisma.bookingDraft.create({data:{userId:user.id,payload:{origin,destination,departureDate:String(b.departureDate),passengerName:name,passengerNik:nik,passengerPhone:phone,vehicle,vehiclePlate:vehicle==="passenger"?null:plate,serviceType:String(b.serviceType||"passenger"),basePrice:prices[vehicle as keyof typeof prices]},expiresAt:new Date(Date.now()+30*60*1000)}});
+ const draft=await prisma.bookingDraft.create({data:{userId:user.id,payload:{origin,destination,departureDate:String(b.departureDate),passengerName:name,passengerNik:nik,passengerPhone:phone,vehicle,vehiclePlate:vehicle==="passenger"?null:plate,serviceType,basePrice:prices[vehicle as keyof typeof prices]},expiresAt:new Date(Date.now()+30*60*1000)}});
  return NextResponse.json({ok:true,draftId:draft.id,total:prices[vehicle as keyof typeof prices]+5000});
 }
