@@ -9,7 +9,8 @@ function redirect(request:Request, query="sent=1") { return NextResponse.redirec
 export async function POST(request:Request) {
   try { requireSameOrigin(request); } catch { return redirect(request); }
 
-  const form=await request.formData();
+  let form: FormData;
+  try { form = await request.formData(); } catch { return redirect(request); }
   const email=String(form.get("email")||"").trim().toLowerCase();
   if(!/^\S+@\S+\.\S+$/.test(email)) return redirect(request);
   if(!(await checkRateLimit(request, "forgot-password", email, 5, 60 * 60 * 1000))) return redirect(request);
