@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireSameOrigin } from "@/lib/csrf";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   try { requireSameOrigin(request); } catch { return NextResponse.json({ error: "Permintaan tidak valid." }, { status: 403 }); }
@@ -18,6 +19,9 @@ export async function POST(request: Request) {
   }
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "");
+  if (!(await checkRateLimit(request, "login", email || "anonymous", 10, 15 * 60 * 1000))) {
+    return isJson ? NextResponse.json({ error: "Terlalu banyak percobaan login. Coba lagi nanti." }, { status: 429 }) : NextResponse.redirect(new URL("/login?error=Terlalu%20banyak%20percobaan", request.url));
+  }
   if (email.length > 254 || password.length > 128) return isJson ? NextResponse.json({ error: "Email atau password salah." }, { status: 401 }) : NextResponse.redirect(new URL("/login?error=Email%20atau%20password%20salah", request.url));
 
   const user = await prisma.user.findUnique({ where: { email } });
