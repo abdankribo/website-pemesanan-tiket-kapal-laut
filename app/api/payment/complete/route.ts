@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
@@ -45,6 +46,7 @@ export async function POST(request: Request) {
       const created = await tx.ticket.create({
         data: {
           userId: user.id,
+          ticketId: randomUUID(),
           passengerName: String(payload.passengerName),
           passengerNik: String(payload.passengerNik),
           passengerPhone: String(payload.passengerPhone),
