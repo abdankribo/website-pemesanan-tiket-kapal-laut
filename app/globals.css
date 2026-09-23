@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+:root {
+  --primary: #003063;
+  --primary-container: #00468c;
+  --primary-fixed: #d6e3ff;
+  --primary-fixed-dim: #a9c7ff;
+  --secondary: #904d00;
+  --secondary-container: #fd8b00;
+  --surface: #f8f9fb;
+  --surface-low: #f2f4f6;
+  --surface-container: #eceef0;
+  --surface-high: #e6e8ea;
+  --on-surface: #191c1e;
+  --on-surface-variant: #424751;
+  --outline: #737782;
+  --error: #ba1a1a;
+  --error-container: #ffdad6;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: Inter, sans-serif;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+*, *::before, *::after { box-sizing: border-box; }
+img { max-width: 100%; }
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+.no-scrollbar::-webkit-scrollbar { display: none; }
