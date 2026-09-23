@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import ClearProfileForm from "@/components/clear-profile-form";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function AccountPage({ searchParams }: { searchParams: Promise<{ error?: string; saved?: string }> }) {
@@ -21,9 +22,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
         <label className="block text-sm font-semibold">Tanggal lahir<input name="birth_date" type="date" defaultValue={user.birthDate?user.birthDate.toISOString().slice(0,10):""} required className="input mt-2"/></label>
         <button className="w-full rounded-xl bg-primary px-5 py-3 font-bold text-white">Simpan Profil</button>
       </form>
-      <form action="/api/profile/clear" method="POST" className="mt-4" onSubmit={(e)=>{if(!confirm("Kosongkan data profil dan hapus semua tiket Anda?")) e.preventDefault();}}>
-        <button className="w-full rounded-xl border border-red-200 px-5 py-3 text-sm font-bold text-red-700">Kosongkan Data Profil</button>
-      </form>
+      <ClearProfileForm />
       <form action="/api/auth/logout" method="POST" className="mt-4"><button className="w-full rounded-xl border border-slate-200 px-5 py-3 text-sm font-bold">Logout</button></form>
     </div>
   </div></main>;
