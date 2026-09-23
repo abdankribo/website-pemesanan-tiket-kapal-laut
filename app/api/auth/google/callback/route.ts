@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   const state = url.searchParams.get("state");
   const stateCookie = (await cookies()).get("google_oauth_state")?.value;
 
-  if (!code || !state || !stateCookie || state !== decodeURIComponent(stateCookie)) {
+  if (!code || !state || !stateCookie || state !== stateCookie) {
     return NextResponse.redirect(new URL("/login?error=OAuth%20state%20tidak%20valid", request.url));
   }
 
