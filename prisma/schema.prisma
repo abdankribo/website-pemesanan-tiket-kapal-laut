@@ -37,6 +37,15 @@ model PasswordResetToken {
   @@map("password_reset_tokens")
 }
 
+model RateLimitBucket {
+  key      String   @id
+  count    Int
+  resetAt  DateTime @map("reset_at")
+
+  @@index([resetAt])
+  @@map("rate_limit_buckets")
+}
+
 model BookingDraft {
   id           String   @id @default(uuid()) @db.Uuid
   userId       Int      @map("user_id")
