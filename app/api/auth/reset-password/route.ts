@@ -8,7 +8,8 @@ import { checkRateLimit } from "@/lib/rate-limit";
 export async function POST(request:Request) {
   try { requireSameOrigin(request); } catch { return NextResponse.redirect(new URL("/login?error=reset_invalid",request.url)); }
 
-  const form=await request.formData();
+  let form: FormData;
+  try { form = await request.formData(); } catch { return NextResponse.redirect(new URL("/login?error=reset_invalid",request.url)); }
   const email=String(form.get("email")||"").trim().toLowerCase();
   const raw=String(form.get("token")||"");
   const password=String(form.get("password")||"");
