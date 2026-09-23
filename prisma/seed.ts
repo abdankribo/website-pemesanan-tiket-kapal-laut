@@ -3,19 +3,9 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const email = "demo@example.com";
-
-  await prisma.user.upsert({
-    where: { email },
-    update: {},
-    create: {
-      name: "Demo User",
-      email,
-      password: null,
-    },
-  });
-
-  console.log("Seed complete.");
+  const users = await prisma.user.count();
+  const tickets = await prisma.ticket.count();
+  console.log("Seed check complete:", users, "users,", tickets, "tickets.");
 }
 
 main()
