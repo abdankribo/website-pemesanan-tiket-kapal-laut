@@ -42,7 +42,7 @@ export default function SearchForm() {
         </Field>
         <Field label="Service Type">
           <select className="input" value={serviceType} onChange={e => setServiceType(e.target.value)}>
-            <option value="passenger">Passenger Only</option><option value="vehicle">Vehicle (Car/Bike)</option>
+            <option value="passenger">Passenger Only</option><option value="motor">Motor</option><option value="car">Mobil</option>
           </select>
         </Field>
       </div>
