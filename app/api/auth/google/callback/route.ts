@@ -72,7 +72,7 @@ export async function GET(request: Request) {
     user = await prisma.user.update({ where: { id: user.id }, data: { googleId, emailVerifiedAt: new Date() } });
   }
 
-  await createSession(user.id);
+  await createSession(user.id, true);
   const response = NextResponse.redirect(new URL("/booking", request.url));
   response.cookies.delete("google_oauth_state");
   return response;
