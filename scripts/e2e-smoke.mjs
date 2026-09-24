@@ -36,6 +36,19 @@ const register = await jsonPost("/api/auth/register", {
 assert(register.status === 200, "Register failed: HTTP " + register.status);
 const cookie = sessionCookie(register);
 
+const logout = await fetch(base + "/api/auth/logout", {
+  method: "POST",
+  headers: { Origin: origin, Cookie: cookie },
+  redirect: "manual",
+});
+assert(logout.status >= 300 && logout.status < 400, "Logout did not redirect");
+
+const login = await jsonPost("/api/auth/login", { email, password, remember: true });
+assert(login.status === 200, "Remember-me login failed: HTTP " + login.status);
+const persistentCookieHeader = login.headers.get("set-cookie") || "";
+assert(/Max-Age=2592000/i.test(persistentCookieHeader), "Remember-me cookie did not receive a 30-day max age");
+const persistentCookie = sessionCookie(login);
+
 const booking = await jsonPost("/api/booking/draft", {
   origin: "ujung",
   destination: "kamal",
@@ -46,7 +59,7 @@ const booking = await jsonPost("/api/booking/draft", {
   passengerNik: "3273010101010001",
   passengerPhone: "081234567890",
   vehiclePlate: "",
-}, cookie);
+}, persistentCookie);
 assert(booking.status === 200, "Booking draft failed: HTTP " + booking.status);
 const bookingBody = await booking.json();
 assert(bookingBody.ok === true && bookingBody.draftId, "Booking draft response is invalid");
@@ -60,7 +73,7 @@ const payment = await fetch(base + "/api/payment/complete", {
   headers: {
     "Content-Type": "application/x-www-form-urlencoded",
     Origin: origin,
-    Cookie: cookie,
+    Cookie: persistentCookie,
   },
   body: paymentBody,
   redirect: "manual",
@@ -72,7 +85,7 @@ const ticketUrl = new URL(ticketLocation, base);
 assert(ticketUrl.pathname === "/ticket" && ticketUrl.searchParams.has("ticket"), "Payment redirect did not point to a ticket");
 const ticketId = ticketUrl.searchParams.get("ticket");
 
-const ticket = await fetch(ticketUrl, { headers: { Cookie: cookie } });
+const ticket = await fetch(ticketUrl, { headers: { Cookie: persistentCookie } });
 assert(ticket.status === 200, "Ticket page failed: HTTP " + ticket.status);
 
 const verifyUrl = new URL("/ticket/verify", base);
@@ -82,7 +95,7 @@ assert(verify.status === 200, "Ticket verification failed: HTTP " + verify.statu
 const verifyHtml = await verify.text();
 assert(verifyHtml.includes("Verified"), "Ticket verification did not report Verified");
 
-const myTickets = await fetch(base + "/my-tickets", { headers: { Cookie: cookie } });
+const myTickets = await fetch(base + "/my-tickets", { headers: { Cookie: persistentCookie } });
 assert(myTickets.status === 200, "My Tickets failed: HTTP " + myTickets.status);
 
 console.log("E2E smoke passed:", { email, ticketId });
