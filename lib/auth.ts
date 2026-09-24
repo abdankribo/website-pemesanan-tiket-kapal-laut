@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 const COOKIE = "sm_session";
 const MAX_AGE = 2 * 60 * 60;
+const REMEMBER_MAX_AGE = 30 * 24 * 60 * 60;
 const authSecret = process.env.AUTH_SECRET;
 if (!authSecret || authSecret.length < 32) {
   throw new Error("AUTH_SECRET must be configured with at least 32 characters.");
@@ -20,11 +21,12 @@ export type SessionUser = {
   birthDate: Date | null;
 };
 
-export async function createSession(userId: number) {
-  const token = await new SignJWT({ userId })
+export async function createSession(userId: number, remember = false) {
+  const maxAge = remember ? REMEMBER_MAX_AGE : MAX_AGE;
+  const token = await new SignJWT({ userId, remember })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime(`${MAX_AGE}s`)
+    .setExpirationTime(`${maxAge}s`)
     .sign(secret);
 
   const store = await cookies();
@@ -33,12 +35,22 @@ export async function createSession(userId: number) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: MAX_AGE,
+    maxAge,
   });
 }
 
 export async function refreshSession(userId: number) {
-  return createSession(userId);
+  let remember = false;
+  const token = (await cookies()).get(COOKIE)?.value;
+  if (token) {
+    try {
+      const { payload } = await jwtVerify(token, secret);
+      remember = payload.remember === true;
+    } catch {
+      return;
+    }
+  }
+  return createSession(userId, remember);
 }
 
 export async function destroySession() {
