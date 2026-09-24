@@ -25,6 +25,12 @@ function sessionCookie(response) {
   return "sm_session=" + match[1];
 }
 
+const malformedLogin = await jsonPost("/api/auth/login", null);
+assert(malformedLogin.status === 400, "Malformed login payload was not rejected");
+
+const malformedRegister = await jsonPost("/api/auth/register", null);
+assert(malformedRegister.status === 400, "Malformed register payload was not rejected");
+
 const email = "ci-" + Date.now() + "@example.com";
 const password = "CiSmokePass123!";
 
