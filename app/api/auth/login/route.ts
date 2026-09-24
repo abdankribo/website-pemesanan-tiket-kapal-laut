@@ -19,6 +19,7 @@ export async function POST(request: Request) {
   }
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "");
+  const remember = body.remember === true || body.remember === "true" || body.remember === "1";
   if (!(await checkRateLimit(request, "login", email || "anonymous", 10, 15 * 60 * 1000))) {
     return isJson ? NextResponse.json({ error: "Terlalu banyak percobaan login. Coba lagi nanti." }, { status: 429 }) : NextResponse.redirect(new URL("/login?error=Terlalu%20banyak%20percobaan", request.url));
   }
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.redirect(new URL("/login?error=Email%20atau%20password%20salah", request.url));
   }
 
-  await createSession(user.id);
+  await createSession(user.id, remember);
   if (isJson) return NextResponse.json({ ok: true });
   return NextResponse.redirect(new URL("/booking", request.url));
 }
