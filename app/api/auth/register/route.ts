@@ -4,6 +4,7 @@ import { requireSameOrigin } from "@/lib/csrf";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { Prisma } from "@/generated/prisma";
 
 export async function POST(request: Request) {
   try { requireSameOrigin(request); } catch { return NextResponse.json({ error: "Permintaan tidak valid." }, { status: 403 }); }
@@ -35,10 +36,19 @@ export async function POST(request: Request) {
     return NextResponse.redirect(new URL("/login?error=Akun%20sudah%20terdaftar", request.url));
   }
 
-  const user = await prisma.user.create({
-    data: { name, email, password: await hash(password, 12) },
-    select: { id: true },
-  });
+  let user;
+  try {
+    user = await prisma.user.create({
+      data: { name, email, password: await hash(password, 12) },
+      select: { id: true },
+    });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      if (isJson) return NextResponse.json({ error: "Email sudah terdaftar." }, { status: 409 });
+      return NextResponse.redirect(new URL("/login?error=Akun%20sudah%20terdaftar", request.url));
+    }
+    throw error;
+  }
 
   await createSession(user.id);
   if (isJson) return NextResponse.json({ ok: true });
