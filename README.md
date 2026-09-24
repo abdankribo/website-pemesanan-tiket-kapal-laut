@@ -34,6 +34,8 @@ The GitHub Actions workflow validates:
 - production build
 - production server startup and health endpoint
 - same-origin protection for protected POST endpoints
+- API responses are marked `Cache-Control: no-store`
+- malformed booking payload rejection
 - register/logout/login with remember-me
 - search
 - motor booking
@@ -53,6 +55,8 @@ For a pooled PostgreSQL provider, use:
 - `DIRECT_URL`: direct connection for Prisma migrations and administration
 
 The runtime client reads `DATABASE_URL`; `prisma.config.ts` uses `DIRECT_URL` when it is available.
+
+In serverless production, connection-pool capacity must be matched to the database/provider. Keep `DATABASE_URL` on the provider's pooled endpoint when available; do not assume the development database's connection capacity is suitable for Vercel traffic.
 
 Do not put production credentials in Git.
 
