@@ -6,11 +6,15 @@ import { createSession } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { Prisma } from "@/generated/prisma";
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 export async function POST(request: Request) {
   try { requireSameOrigin(request); } catch { return NextResponse.json({ error: "Permintaan tidak valid." }, { status: 403 }); }
 
   const isJson = request.headers.get("content-type")?.includes("application/json");
-  let body: Record<string, unknown>;
+  let body: unknown;
   try {
     body = isJson ? await request.json() : Object.fromEntries(await request.formData());
   } catch {
@@ -18,12 +22,18 @@ export async function POST(request: Request) {
       ? NextResponse.json({ error: "Payload tidak valid." }, { status: 400 })
       : NextResponse.redirect(new URL("/register?error=Permintaan%20tidak%20valid", request.url));
   }
-  const name = String(body.name || "").trim();
-  if (!(await checkRateLimit(request, "register", String(body.email || "anonymous"), 5, 60 * 60 * 1000))) {
-    return isJson ? NextResponse.json({ error: "Terlalu banyak percobaan pendaftaran. Coba lagi nanti." }, { status: 429 }) : NextResponse.redirect(new URL("/register?error=Terlalu%20banyak%20percobaan", request.url));
+  if (!isRecord(body)) {
+    return isJson
+      ? NextResponse.json({ error: "Payload tidak valid." }, { status: 400 })
+      : NextResponse.redirect(new URL("/register?error=Permintaan%20tidak%20valid", request.url));
   }
+
+  const name = String(body.name || "").trim();
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "");
+  if (!(await checkRateLimit(request, "register", email || "anonymous", 5, 60 * 60 * 1000))) {
+    return isJson ? NextResponse.json({ error: "Terlalu banyak percobaan pendaftaran. Coba lagi nanti." }, { status: 429 }) : NextResponse.redirect(new URL("/register?error=Terlalu%20banyak%20percobaan", request.url));
+  }
 
   if (name.length > 100 || email.length > 254 || !name || !/^\S+@\S+\.\S+$/.test(email) || password.length < 8 || password.length > 128) {
     if (isJson) return NextResponse.json({ error: "Data pendaftaran tidak valid." }, { status: 400 });

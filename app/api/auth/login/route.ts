@@ -5,11 +5,15 @@ import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 export async function POST(request: Request) {
   try { requireSameOrigin(request); } catch { return NextResponse.json({ error: "Permintaan tidak valid." }, { status: 403 }); }
 
   const isJson = request.headers.get("content-type")?.includes("application/json");
-  let body: Record<string, unknown>;
+  let body: unknown;
   try {
     body = isJson ? await request.json() : Object.fromEntries(await request.formData());
   } catch {
@@ -17,6 +21,12 @@ export async function POST(request: Request) {
       ? NextResponse.json({ error: "Payload tidak valid." }, { status: 400 })
       : NextResponse.redirect(new URL("/login?error=Permintaan%20tidak%20valid", request.url));
   }
+  if (!isRecord(body)) {
+    return isJson
+      ? NextResponse.json({ error: "Payload tidak valid." }, { status: 400 })
+      : NextResponse.redirect(new URL("/login?error=Permintaan%20tidak%20valid", request.url));
+  }
+
   const email = String(body.email || "").trim().toLowerCase();
   const password = String(body.password || "");
   const remember = body.remember === true || body.remember === "true" || body.remember === "1";
