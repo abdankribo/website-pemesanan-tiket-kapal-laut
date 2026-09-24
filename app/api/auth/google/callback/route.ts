@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
 import { randomBytes } from "crypto";
+import { Prisma } from "@/generated/prisma";
 
 type GoogleToken = { access_token?: string; id_token?: string };
 type GoogleUser = { sub?: string; email?: string; name?: string; email_verified?: boolean };
@@ -59,17 +60,34 @@ export async function GET(request: Request) {
   if (!user) user = await prisma.user.findUnique({ where: { email } });
 
   if (!user) {
-    user = await prisma.user.create({
-      data: {
-        name: profile.name || "Google User",
-        email,
-        googleId,
-        emailVerifiedAt: new Date(),
-        password: randomBytes(32).toString("hex"),
-      },
-    });
+    try {
+      user = await prisma.user.create({
+        data: {
+          name: profile.name || "Google User",
+          email,
+          googleId,
+          emailVerifiedAt: new Date(),
+          password: randomBytes(32).toString("hex"),
+        },
+      });
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002")) throw error;
+      user = await prisma.user.findUnique({ where: { email } });
+      if (!user) return NextResponse.redirect(new URL("/login?error=Google%20OAuth%20gagal", request.url));
+      if (!user.googleId) {
+        try {
+          user = await prisma.user.update({ where: { id: user.id }, data: { googleId, emailVerifiedAt: new Date() } });
+        } catch {
+          return NextResponse.redirect(new URL("/login?error=Akun%20Google%20tidak%20dapat%20ditautkan", request.url));
+        }
+      }
+    }
   } else if (!user.googleId) {
-    user = await prisma.user.update({ where: { id: user.id }, data: { googleId, emailVerifiedAt: new Date() } });
+    try {
+      user = await prisma.user.update({ where: { id: user.id }, data: { googleId, emailVerifiedAt: new Date() } });
+    } catch {
+      return NextResponse.redirect(new URL("/login?error=Akun%20Google%20tidak%20dapat%20ditautkan", request.url));
+    }
   }
 
   await createSession(user.id, true);
