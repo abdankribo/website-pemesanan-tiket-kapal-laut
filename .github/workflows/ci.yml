@@ -57,3 +57,6 @@ jobs:
           test "$(curl -s -o /dev/null -w "%{http_code}" -X POST http://127.0.0.1:3000/api/auth/login -H "Content-Type: application/json" --data '{"email":"test@example.com","password":"invalid"}')" = "403"
           test "$(curl -s -o /dev/null -w "%{http_code}" -X POST http://127.0.0.1:3000/api/auth/register -H "Content-Type: application/json" --data '{"name":"Test","email":"test@example.com","password":"password123"}')" = "403"
           test "$(curl -s -o /dev/null -w "%{http_code}" -X POST http://127.0.0.1:3000/api/booking/draft -H "Content-Type: application/json" --data '{}')" = "403"
+
+      - name: End-to-end booking smoke test
+        run: node scripts/e2e-smoke.mjs
