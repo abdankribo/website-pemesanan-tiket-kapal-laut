@@ -1,4 +1,4 @@
-const base = "http://127.0.0.1:3000";
+const base = "http://localhost:3000";
 const origin = base;
 
 function assert(condition, message) {
