@@ -22,14 +22,19 @@ export async function GET(request: Request) {
   if (!clientId || !clientSecret) return NextResponse.redirect(new URL("/login?error=Google%20OAuth%20belum%20dikonfigurasi", request.url));
 
   const callback = new URL(process.env.GOOGLE_REDIRECT_URI || "/api/auth/google/callback", request.url);
-  const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      code, client_id: clientId, client_secret: clientSecret,
-      redirect_uri: callback.toString(), grant_type: "authorization_code",
-    }),
-  });
+  let tokenResponse: Response;
+  try {
+    tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        code, client_id: clientId, client_secret: clientSecret,
+        redirect_uri: callback.toString(), grant_type: "authorization_code",
+      }),
+    });
+  } catch {
+    return NextResponse.redirect(new URL("/login?error=Google%20OAuth%20gagal", request.url));
+  }
   if (!tokenResponse.ok) return NextResponse.redirect(new URL("/login?error=Google%20OAuth%20gagal", request.url));
 
   const token = (await tokenResponse.json()) as GoogleToken;
