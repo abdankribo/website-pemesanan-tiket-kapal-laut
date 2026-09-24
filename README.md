@@ -54,6 +54,8 @@ For a pooled PostgreSQL provider, use:
 
 The runtime client reads `DATABASE_URL`; `prisma.config.ts` uses `DIRECT_URL` when it is available.
 
+In serverless production, connection-pool capacity must be matched to the database/provider. Keep `DATABASE_URL` on the provider's pooled endpoint when available; do not assume the development database's connection capacity is suitable for Vercel traffic.
+
 Do not put production credentials in Git.
 
 Before the first production deployment, apply all committed migrations to the production database with:
