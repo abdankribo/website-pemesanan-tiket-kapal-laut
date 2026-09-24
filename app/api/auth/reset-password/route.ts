@@ -21,9 +21,13 @@ export async function POST(request:Request) {
   const record=await prisma.passwordResetToken.findUnique({where:{email}});
   if(!record || record.token!==token || !record.expiresAt || record.expiresAt<new Date()) return NextResponse.redirect(new URL("/login?error=reset_invalid",request.url));
 
-  await prisma.$transaction([
-    prisma.user.update({where:{email},data:{password:await bcrypt.hash(password,12)}}),
-    prisma.passwordResetToken.delete({where:{email}})
-  ]);
+  try {
+    await prisma.$transaction([
+      prisma.user.update({where:{email},data:{password:await bcrypt.hash(password,12)}}),
+      prisma.passwordResetToken.delete({where:{email}})
+    ]);
+  } catch {
+    return NextResponse.redirect(new URL("/login?error=reset_invalid",request.url));
+  }
   return NextResponse.redirect(new URL("/login?status=password_reset",request.url));
 }
