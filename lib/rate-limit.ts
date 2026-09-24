@@ -23,5 +23,18 @@ export async function checkRateLimit(request: Request, scope: string, identity: 
     RETURNING "count", "reset_at"
   `);
 
-  return rows[0]?.count <= limit;
+  const currentCount = rows[0]?.count ?? 0;
+  if (currentCount === 1) {
+    await prisma.$executeRaw`DELETE FROM "rate_limit_buckets"
+      WHERE "reset_at" < NOW()
+        AND "key" IN (
+          SELECT "key"
+          FROM "rate_limit_buckets"
+          WHERE "reset_at" < NOW()
+          ORDER BY "reset_at"
+          LIMIT 100
+        )`;
+  }
+
+  return currentCount <= limit;
 }
