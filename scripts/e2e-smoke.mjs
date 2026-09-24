@@ -20,7 +20,7 @@ async function jsonPost(path, payload, cookie = "") {
 
 function sessionCookie(response) {
   const setCookie = response.headers.get("set-cookie") || "";
-  const match = setCookie.match(/(?:^|,\\s*)sm_session=([^;]+)/);
+  const match = setCookie.match(/(?:^|,\s*)sm_session=([^;]+)/);
   assert(match, "Session cookie was not issued");
   return "sm_session=" + match[1];
 }
@@ -49,16 +49,22 @@ const persistentCookieHeader = login.headers.get("set-cookie") || "";
 assert(/Max-Age=2592000/i.test(persistentCookieHeader), "Remember-me cookie did not receive a 30-day max age");
 const persistentCookie = sessionCookie(login);
 
+const searchDate = new Date(Date.now() + 86400000 * 2).toISOString().slice(0, 10);
+const search = await fetch(base + "/api/search?origin=ujung&destination=kamal&departureDate=" + searchDate + "&serviceType=motor", { headers: { Cookie: persistentCookie }, redirect: "manual" });
+assert(search.status >= 300 && search.status < 400, "Search did not redirect");
+const searchLocation = search.headers.get("location");
+assert(searchLocation && searchLocation.includes("serviceType=motor"), "Search lost motor service type");
+
 const booking = await jsonPost("/api/booking/draft", {
   origin: "ujung",
   destination: "kamal",
-  departureDate: new Date(Date.now() + 86400000 * 2).toISOString().slice(0, 10),
-  serviceType: "passenger",
-  vehicle: "passenger",
+  departureDate: searchDate,
+  serviceType: "motor",
+  vehicle: "motor",
   passengerName: "CI Smoke User",
   passengerNik: "3273010101010001",
   passengerPhone: "081234567890",
-  vehiclePlate: "",
+  vehiclePlate: "KT 9899 LK",
 }, persistentCookie);
 assert(booking.status === 200, "Booking draft failed: HTTP " + booking.status);
 const bookingBody = await booking.json();
