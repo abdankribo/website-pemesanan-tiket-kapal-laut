@@ -10,10 +10,11 @@ export default async function VerifyPage({searchParams}:{searchParams:Promise<{t
   const departure=new Date(ticket.departureDate); departure.setHours(0,0,0,0);
   const expired=departure<today;
   const displayStatus=expired?"expired":ticket.status==="booked"?"valid":ticket.status;
+  const heading=displayStatus==="valid"?"Verified":displayStatus==="expired"?"Expired":"Ticket Tidak Aktif";
 
   return <main className="min-h-screen bg-surface px-4 py-12"><div className="mx-auto max-w-lg rounded-3xl bg-white p-8 shadow-sm">
     <p className="text-xs font-bold uppercase tracking-[.3em] text-secondary">Ticket Verification</p>
-    <h1 className="mt-2 text-3xl font-black text-primary">{displayStatus==="expired"?"Expired":"Verified"}</h1>
+    <h1 className="mt-2 text-3xl font-black text-primary">{heading}</h1>
     <div className="mt-6 space-y-3 text-sm">
       <p><b>Passenger:</b> {ticket.passengerName}</p>
       <p><b>Route:</b> {ticket.origin} → {ticket.destination}</p>
