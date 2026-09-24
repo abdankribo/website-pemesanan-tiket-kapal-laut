@@ -8,6 +8,12 @@ import { Prisma } from "@/generated/prisma";
 type GoogleToken = { access_token?: string; id_token?: string };
 type GoogleUser = { sub?: string; email?: string; name?: string; email_verified?: boolean };
 
+function redirectAndClearState(request: Request, path: string) {
+  const response = NextResponse.redirect(new URL(path, request.url));
+  response.cookies.delete("google_oauth_state");
+  return response;
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
@@ -15,12 +21,14 @@ export async function GET(request: Request) {
   const stateCookie = (await cookies()).get("google_oauth_state")?.value;
 
   if (!code || !state || !stateCookie || state !== stateCookie) {
-    return NextResponse.redirect(new URL("/login?error=OAuth%20state%20tidak%20valid", request.url));
+    return redirectAndClearState(request, "/login?error=OAuth%20state%20tidak%20valid");
   }
 
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  if (!clientId || !clientSecret) return NextResponse.redirect(new URL("/login?error=Google%20OAuth%20belum%20dikonfigurasi", request.url));
+  if (!clientId || !clientSecret) {
+    return redirectAndClearState(request, "/login?error=Google%20OAuth%20belum%20dikonfigurasi");
+  }
 
   const callback = new URL(process.env.GOOGLE_REDIRECT_URI || "/api/auth/google/callback", request.url);
   let tokenResponse: Response;
@@ -29,17 +37,24 @@ export async function GET(request: Request) {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
-        code, client_id: clientId, client_secret: clientSecret,
-        redirect_uri: callback.toString(), grant_type: "authorization_code",
+        code,
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: callback.toString(),
+        grant_type: "authorization_code",
       }),
     });
   } catch {
-    return NextResponse.redirect(new URL("/login?error=Google%20OAuth%20gagal", request.url));
+    return redirectAndClearState(request, "/login?error=Google%20OAuth%20gagal");
   }
-  if (!tokenResponse.ok) return NextResponse.redirect(new URL("/login?error=Google%20OAuth%20gagal", request.url));
+  if (!tokenResponse.ok) {
+    return redirectAndClearState(request, "/login?error=Google%20OAuth%20gagal");
+  }
 
   const token = (await tokenResponse.json()) as GoogleToken;
-  if (!token.access_token) return NextResponse.redirect(new URL("/login?error=Token%20Google%20tidak%20tersedia", request.url));
+  if (!token.access_token) {
+    return redirectAndClearState(request, "/login?error=Token%20Google%20tidak%20tersedia");
+  }
 
   let userResponse: Response;
   try {
@@ -47,14 +62,18 @@ export async function GET(request: Request) {
       headers: { Authorization: `Bearer ${token.access_token}` },
     });
   } catch {
-    return NextResponse.redirect(new URL("/login?error=Profil%20Google%20tidak%20dapat%20dibaca", request.url));
+    return redirectAndClearState(request, "/login?error=Profil%20Google%20tidak%20dapat%20dibaca");
   }
-  if (!userResponse.ok) return NextResponse.redirect(new URL("/login?error=Profil%20Google%20tidak%20dapat%20dibaca", request.url));
+  if (!userResponse.ok) {
+    return redirectAndClearState(request, "/login?error=Profil%20Google%20tidak%20dapat%20dibaca");
+  }
 
   const profile = (await userResponse.json()) as GoogleUser;
   const googleId = String(profile.sub || "");
   const email = String(profile.email || "").trim().toLowerCase();
-  if (!googleId || !email || profile.email_verified !== true) return NextResponse.redirect(new URL("/login?error=Email%20Google%20tidak%20terverifikasi", request.url));
+  if (!googleId || !email || profile.email_verified !== true) {
+    return redirectAndClearState(request, "/login?error=Email%20Google%20tidak%20terverifikasi");
+  }
 
   let user = await prisma.user.findUnique({ where: { googleId } });
   if (!user) user = await prisma.user.findUnique({ where: { email } });
@@ -73,25 +92,29 @@ export async function GET(request: Request) {
     } catch (error) {
       if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002")) throw error;
       user = await prisma.user.findUnique({ where: { email } });
-      if (!user) return NextResponse.redirect(new URL("/login?error=Google%20OAuth%20gagal", request.url));
+      if (!user) return redirectAndClearState(request, "/login?error=Google%20OAuth%20gagal");
       if (!user.googleId) {
         try {
-          user = await prisma.user.update({ where: { id: user.id }, data: { googleId, emailVerifiedAt: new Date() } });
+          user = await prisma.user.update({
+            where: { id: user.id },
+            data: { googleId, emailVerifiedAt: new Date() },
+          });
         } catch {
-          return NextResponse.redirect(new URL("/login?error=Akun%20Google%20tidak%20dapat%20ditautkan", request.url));
+          return redirectAndClearState(request, "/login?error=Akun%20Google%20tidak%20dapat%20ditautkan");
         }
       }
     }
   } else if (!user.googleId) {
     try {
-      user = await prisma.user.update({ where: { id: user.id }, data: { googleId, emailVerifiedAt: new Date() } });
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { googleId, emailVerifiedAt: new Date() },
+      });
     } catch {
-      return NextResponse.redirect(new URL("/login?error=Akun%20Google%20tidak%20dapat%20ditautkan", request.url));
+      return redirectAndClearState(request, "/login?error=Akun%20Google%20tidak%20dapat%20ditautkan");
     }
   }
 
   await createSession(user.id, true);
-  const response = NextResponse.redirect(new URL("/booking", request.url));
-  response.cookies.delete("google_oauth_state");
-  return response;
+  return redirectAndClearState(request, "/booking");
 }
