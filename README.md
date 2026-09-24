@@ -34,8 +34,6 @@ The GitHub Actions workflow validates:
 - production build
 - production server startup and health endpoint
 - same-origin protection for protected POST endpoints
-- API responses are marked `Cache-Control: no-store`
-- malformed booking payload rejection
 - register/logout/login with remember-me
 - search
 - motor booking
