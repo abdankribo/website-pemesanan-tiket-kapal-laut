@@ -65,7 +65,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   if (!token) return null;
 
   try {
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, getSecret());
     const userId = Number(payload.userId);
     if (!Number.isInteger(userId)) return null;
 
