@@ -2,7 +2,11 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 
-export default async function VerifyPage({ searchParams }: { searchParams: Promise<{ ticket?: string }> }) {
+export default async function VerifyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ticket?: string }>;
+}) {
   const { ticket: ticketId } = await searchParams;
   const cleanTicketId = String(ticketId || "").trim();
 
@@ -15,7 +19,15 @@ export default async function VerifyPage({ searchParams }: { searchParams: Promi
       headers: { "x-forwarded-for": "qr-scan" },
     });
 
-    if (!(await checkRateLimit(request, "ticket-verify-page", cleanTicketId, 20, 60 * 60 * 1000))) {
+    if (
+      !(await checkRateLimit(
+        request,
+        "ticket-verify-page",
+        cleanTicketId,
+        20,
+        60 * 60 * 1000,
+      ))
+    ) {
       return <VerificationError message="Terlalu banyak percobaan verifikasi. Coba lagi nanti." />;
     }
 
@@ -40,15 +52,32 @@ export default async function VerifyPage({ searchParams }: { searchParams: Promi
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+
     const departure = new Date(ticket.departureDate);
     departure.setHours(0, 0, 0, 0);
 
     if (departure < today) {
-      return <VerificationResult ticket={ticket} title="Tiket Kedaluwarsa" message="Tiket sudah melewati tanggal keberangkatan." tone="error" />;
+      return (
+        <VerificationResult
+          ticket={ticket}
+          title="TIKET KEDALUWARSA"
+          message="Tiket sudah melewati tanggal keberangkatan."
+          tone="error"
+          primaryLabel="Kembali"
+        />
+      );
     }
 
     if (ticket.status === "cancelled") {
-      return <VerificationResult ticket={ticket} title="Tiket Dibatalkan" message="Tiket ini sudah dibatalkan dan tidak dapat digunakan." tone="error" />;
+      return (
+        <VerificationResult
+          ticket={ticket}
+          title="TIKET DIBATALKAN"
+          message="Tiket ini sudah dibatalkan dan tidak dapat digunakan."
+          tone="error"
+          primaryLabel="Kembali"
+        />
+      );
     }
 
     let verifiedTicket = ticket;
@@ -75,6 +104,7 @@ export default async function VerifyPage({ searchParams }: { searchParams: Promi
             scannedAt: true,
           },
         });
+
         if (updated) verifiedTicket = updated;
       } else {
         const current = await prisma.ticket.findUnique({
@@ -91,9 +121,13 @@ export default async function VerifyPage({ searchParams }: { searchParams: Promi
             scannedAt: true,
           },
         });
+
         if (!current || current.status !== "scanned") {
-          return <VerificationError message="Status tiket berubah. Silakan scan ulang." />;
+          return (
+            <VerificationError message="Status tiket berubah. Silakan scan ulang." />
+          );
         }
+
         verifiedTicket = current;
         alreadyVerified = true;
       }
@@ -102,18 +136,22 @@ export default async function VerifyPage({ searchParams }: { searchParams: Promi
     return (
       <VerificationResult
         ticket={verifiedTicket}
-        title="Tiket Berhasil Diverifikasi"
+        title="TIKET BERHASIL DIVERIFIKASI"
         message={
           alreadyVerified
-            ? "Tiket ini sudah berhasil diverifikasi sebelumnya."
-            : "Tiket berhasil diverifikasi dan dipindahkan ke Riwayat Pesanan."
+            ? "Tiket ini sudah diverifikasi sebelumnya."
+            : "Tiket sah dan berhasil dicatat sebagai tiket yang sudah digunakan."
         }
         tone="success"
+        alreadyVerified={alreadyVerified}
+        primaryLabel="Kembali"
       />
     );
   } catch (error) {
     console.error("TICKET_VERIFY_PAGE_ERROR", error);
-    return <VerificationError message="Terjadi kesalahan saat memverifikasi tiket. Silakan coba scan ulang." />;
+    return (
+      <VerificationError message="Terjadi kesalahan saat memverifikasi tiket. Silakan scan ulang." />
+    );
   }
 }
 
@@ -134,50 +172,180 @@ function VerificationResult({
   title,
   message,
   tone,
+  alreadyVerified = false,
+  primaryLabel,
 }: {
   ticket: Ticket;
   title: string;
   message: string;
   tone: "success" | "error";
+  alreadyVerified?: boolean;
+  primaryLabel: string;
 }) {
   const success = tone === "success";
 
   return (
-    <main className="min-h-screen bg-surface px-4 py-12">
-      <div className="mx-auto max-w-lg rounded-3xl bg-white p-8 shadow-sm">
-        <div className={success ? "rounded-2xl bg-green-50 p-6" : "rounded-2xl bg-red-50 p-6"}>
-          <p className={success ? "text-xs font-black uppercase tracking-[.3em] text-green-600" : "text-xs font-black uppercase tracking-[.3em] text-red-600"}>
-            Ticket Verification
-          </p>
-          <h1 className={success ? "mt-2 text-3xl font-black text-green-700" : "mt-2 text-3xl font-black text-red-700"}>
-            {title}
-          </h1>
-          <p className="mt-3 text-sm text-slate-600">{message}</p>
-        </div>
-
-        <div className="mt-6 space-y-3 text-sm">
-          <p><b>Passenger:</b> {ticket.passengerName}</p>
-          <p><b>Route:</b> {ticket.origin} → {ticket.destination}</p>
-          <p><b>Departure:</b> {ticket.departureDate.toLocaleDateString("id-ID")}</p>
-          <p><b>Vehicle:</b> {ticket.vehiclePlate || ticket.vehicle || "Passenger"}</p>
-          <p><b>Ticket ID:</b> <span className="break-all">{ticket.ticketId}</span></p>
-          {ticket.scannedAt && (
-            <p><b>Diverifikasi:</b> {ticket.scannedAt.toLocaleString("id-ID")}</p>
-          )}
-        </div>
-
-        {success && (
-          <div className="mt-6 rounded-xl bg-green-50 p-4 text-sm font-semibold text-green-800">
-            Tiket ini sekarang berada di <b>Riwayat Pesanan</b>, bukan lagi di Tiket Aktif.
+    <main
+      className={
+        success
+          ? "min-h-screen bg-[#eef8f1] px-4 py-6 sm:py-10"
+          : "min-h-screen bg-[#fff1f1] px-4 py-6 sm:py-10"
+      }
+    >
+      <div className="mx-auto max-w-xl">
+        <header className="mb-5 flex items-center justify-between px-1">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.28em] text-slate-500">
+              Petugas Loket
+            </p>
+            <p className="text-lg font-black text-slate-900">Verifikasi Tiket</p>
           </div>
-        )}
+          <div
+            className={
+              success
+                ? "rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-green-700 shadow-sm"
+                : "rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-red-700 shadow-sm"
+            }
+          >
+            Scan Result
+          </div>
+        </header>
 
-        <Link
-          href="/"
-          className="mt-7 inline-block rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white"
+        <section
+          className={
+            success
+              ? "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-green-100"
+              : "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-red-100"
+          }
         >
-          Kembali
-        </Link>
+          <div
+            className={
+              success
+                ? "bg-[#087a3d] px-6 py-8 text-center text-white sm:px-10 sm:py-10"
+                : "bg-[#b42318] px-6 py-8 text-center text-white sm:px-10 sm:py-10"
+            }
+          >
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white text-5xl shadow-lg">
+              {success ? "✓" : "!"}
+            </div>
+
+            <p className="mt-5 text-xs font-black uppercase tracking-[0.28em] opacity-80">
+              {success ? (alreadyVerified ? "Sudah tercatat" : "Scan berhasil") : "Perhatian"}
+            </p>
+
+            <h1 className="mt-2 text-2xl font-black leading-tight sm:text-3xl">
+              {title}
+            </h1>
+
+            <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-6 text-white/90">
+              {message}
+            </p>
+          </div>
+
+          <div className="p-5 sm:p-7">
+            <div className="rounded-2xl bg-slate-50 p-5">
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
+                Penumpang
+              </p>
+              <p className="mt-1 text-2xl font-black text-slate-900">
+                {ticket.passengerName}
+              </p>
+
+              <div className="mt-5 grid grid-cols-2 gap-4 border-t border-slate-200 pt-5">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                    Rute
+                  </p>
+                  <p className="mt-1 font-black text-slate-800">
+                    {ticket.origin} → {ticket.destination}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                    Keberangkatan
+                  </p>
+                  <p className="mt-1 font-black text-slate-800">
+                    {ticket.departureDate.toLocaleDateString("id-ID", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                    Kendaraan
+                  </p>
+                  <p className="mt-1 font-black text-slate-800">
+                    {ticket.vehiclePlate || ticket.vehicle || "Passenger"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                    Status
+                  </p>
+                  <p
+                    className={
+                      success
+                        ? "mt-1 font-black text-green-700"
+                        : "mt-1 font-black text-red-700"
+                    }
+                  >
+                    {success ? "TERVERIFIKASI" : "TIDAK VALID"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-2xl border border-slate-200 p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                    Ticket ID
+                  </p>
+                  <p className="mt-1 break-all font-mono text-xs font-bold text-slate-700">
+                    {ticket.ticketId}
+                  </p>
+                </div>
+
+                {ticket.scannedAt && (
+                  <div className="shrink-0 text-right">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                      Diverifikasi
+                    </p>
+                    <p className="mt-1 text-xs font-bold text-slate-700">
+                      {ticket.scannedAt.toLocaleString("id-ID", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {success && (
+              <div className="mt-4 rounded-2xl bg-green-50 px-4 py-3 text-center text-sm font-bold text-green-800">
+                Tiket sudah dipindahkan ke <b>Riwayat Pesanan</b>.
+              </div>
+            )}
+
+            <Link
+              href="/"
+              className={
+                success
+                  ? "mt-5 block w-full rounded-2xl bg-slate-900 px-5 py-4 text-center text-sm font-black text-white transition hover:bg-slate-800"
+                  : "mt-5 block w-full rounded-2xl bg-slate-900 px-5 py-4 text-center text-sm font-black text-white transition hover:bg-slate-800"
+              }
+            >
+              {primaryLabel}
+            </Link>
+          </div>
+        </section>
+
+        <p className="mt-5 text-center text-xs font-medium text-slate-500">
+          Hasil verifikasi ini berasal langsung dari sistem tiket.
+        </p>
       </div>
     </main>
   );
@@ -185,16 +353,38 @@ function VerificationResult({
 
 function VerificationError({ message }: { message: string }) {
   return (
-    <main className="min-h-screen bg-surface px-4 py-12">
-      <div className="mx-auto max-w-lg rounded-3xl bg-white p-8 text-center shadow-sm">
-        <div className="rounded-2xl bg-red-50 p-6">
-          <p className="text-xs font-black uppercase tracking-[.3em] text-red-600">Ticket Verification</p>
-          <h1 className="mt-2 text-2xl font-black text-red-700">Verifikasi Gagal</h1>
-          <p className="mt-3 text-sm text-slate-600">{message}</p>
+    <main className="min-h-screen bg-[#fff1f1] px-4 py-6 sm:py-10">
+      <div className="mx-auto max-w-xl">
+        <div className="mb-5 px-1">
+          <p className="text-[11px] font-black uppercase tracking-[0.28em] text-slate-500">
+            Petugas Loket
+          </p>
+          <p className="text-lg font-black text-slate-900">Verifikasi Tiket</p>
         </div>
-        <Link href="/" className="mt-7 inline-block rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white">
-          Kembali
-        </Link>
+
+        <section className="overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-red-100">
+          <div className="bg-[#b42318] px-6 py-10 text-center text-white sm:px-10">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white text-4xl font-black text-red-700 shadow-lg">
+              !
+            </div>
+            <p className="mt-5 text-xs font-black uppercase tracking-[0.28em] text-white/80">
+              Scan Gagal
+            </p>
+            <h1 className="mt-2 text-3xl font-black">TIKET TIDAK VALID</h1>
+            <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-6 text-white/90">
+              {message}
+            </p>
+          </div>
+
+          <div className="p-6">
+            <Link
+              href="/"
+              className="block w-full rounded-2xl bg-slate-900 px-5 py-4 text-center text-sm font-black text-white"
+            >
+              Kembali
+            </Link>
+          </div>
+        </section>
       </div>
     </main>
   );
