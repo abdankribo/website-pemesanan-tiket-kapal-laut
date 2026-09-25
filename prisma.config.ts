@@ -7,16 +7,12 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    // prisma generate does not connect to the database. Keep the URL
-    // optional here so CI/CD installs can generate the client before runtime
-    // database credentials are injected.
-    //
-    // Neon exposes the direct/unpooled connection as DATABASE_URL_UNPOOLED.
-    // Prefer an explicitly configured DIRECT_URL when present, then fall back
-    // to Neon's unpooled URL for migrations, and finally the runtime URL.
+    // Neon provides DATABASE_URL_UNPOOLED as the direct connection for
+    // migrations. Prefer it over a legacy DIRECT_URL so an old placeholder
+    // cannot prevent production migrations from reaching the active Neon DB.
     url:
-      process.env.DIRECT_URL ||
       process.env.DATABASE_URL_UNPOOLED ||
+      process.env.DIRECT_URL ||
       process.env.DATABASE_URL ||
       "",
   },
