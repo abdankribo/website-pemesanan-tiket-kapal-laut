@@ -1,7 +1,9 @@
 import Link from "next/link";
 import SearchForm from "@/components/search-form";
+import { getCurrentUser } from "@/lib/auth";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const user = await getCurrentUser();
   return (
     <div>
       <header className="fixed inset-x-0 top-0 z-50 bg-white/80 backdrop-blur-xl shadow-[0_8px_24px_-2px_rgba(25,28,30,0.06)]">
@@ -11,8 +13,17 @@ export default function LandingPage() {
             <span className="text-sm uppercase tracking-tight sm:text-lg">Surabaya-Madura</span>
           </Link>
           <div className="flex items-center gap-2">
-            <Link href="/login" className="hidden rounded-full px-4 py-2 text-sm font-bold text-primary hover:bg-slate-100 sm:block">Login</Link>
-            <Link href="/register" className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-container">Book Now</Link>
+            {user ? (
+              <>
+                <Link href="/my-tickets" className="hidden rounded-full px-4 py-2 text-sm font-bold text-primary hover:bg-slate-100 sm:block">Tiket Saya</Link>
+                <Link href="/account" className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-container">Akun</Link>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="hidden rounded-full px-4 py-2 text-sm font-bold text-primary hover:bg-slate-100 sm:block">Login</Link>
+                <Link href="/register" className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-container">Book Now</Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -26,8 +37,8 @@ export default function LandingPage() {
               <h1 className="text-4xl font-extrabold leading-none tracking-tighter sm:text-5xl md:text-7xl">Bridging the<br /><span className="italic text-primary-fixed-dim">Madura Strait.</span></h1>
               <p className="mt-5 max-w-md text-base font-light leading-relaxed text-primary-fixed sm:text-lg">Premium ferry services connecting Ujung Port and Kamal Port with simple digital booking and QR boarding.</p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/login" className="rounded-xl bg-secondary-container px-6 py-4 text-sm font-black uppercase tracking-widest text-primary">Book a Ticket</Link>
-                <Link href="/register" className="rounded-xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-bold text-white backdrop-blur">Create Account</Link>
+                <Link href={user ? "/booking" : "/login"} className="rounded-xl bg-secondary-container px-6 py-4 text-sm font-black uppercase tracking-widest text-primary">Book a Ticket</Link>
+                <Link href={user ? "/account" : "/register"} className="rounded-xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-bold text-white backdrop-blur">{user ? "My Account" : "Create Account"}</Link>
               </div>
             </div>
             
