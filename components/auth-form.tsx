@@ -14,11 +14,18 @@ export function LoginForm() {
   const [busy, setBusy] = useState(false);
 
   async function submit(e: React.FormEvent) {
-    e.preventDefault(); setBusy(true); setError("");
-    const result = await signInWithCredentials(email, password, remember);
-    if (result.ok) router.push("/booking");
-    else setError(result.error || "Login gagal.");
-    setBusy(false);
+    e.preventDefault();
+    setBusy(true);
+    setError("");
+    try {
+      const result = await signInWithCredentials(email, password, remember);
+      if (result.ok) router.push("/booking");
+      else setError(result.error || "Login gagal.");
+    } catch {
+      setError("Tidak dapat terhubung ke server. Coba lagi.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return <form onSubmit={submit} className="space-y-5 px-5 py-6 sm:px-8 sm:py-8">
@@ -36,9 +43,70 @@ export function LoginForm() {
 
 export function RegisterForm() {
   const router = useRouter();
-  const [name,setName]=useState(""); const [email,setEmail]=useState(""); const [password,setPassword]=useState(""); const [confirmation,setConfirmation]=useState(""); const [error,setError]=useState(""); const [busy,setBusy]=useState(false);
-  async function submit(e: React.FormEvent){e.preventDefault();setBusy(true);setError(""); if(password!==confirmation){setError("Konfirmasi password tidak sama.");setBusy(false);return;} const r=await fetch("/api/auth/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,email,password})}); const data=await r.json(); if(!r.ok){setError(data.error||"Registrasi gagal.");setBusy(false);return;} router.push("/booking");}
-  return <form onSubmit={submit} className="space-y-5 px-5 py-6 sm:px-8 sm:py-8">{error&&<div className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</div>}<Field label="Nama lengkap"><input className="input" value={name} onChange={e=>setName(e.target.value)} required /></Field><Field label="Email"><input className="input" type="email" value={email} onChange={e=>setEmail(e.target.value)} required /></Field><Field label="Password"><input className="input" type="password" value={password} onChange={e=>setPassword(e.target.value)} minLength={8} required /></Field><Field label="Konfirmasi password"><input className="input" type="password" value={confirmation} onChange={e=>setConfirmation(e.target.value)} minLength={8} required /></Field><button disabled={busy} className="w-full rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white disabled:opacity-50">{busy?"Membuat akun...":"Buat akun dan lanjutkan"}</button><p className="text-center text-sm text-slate-500">Sudah punya akun? <a href="/login" className="font-bold text-primary">Masuk</a></p></form>;
+  const [name,setName]=useState("");
+  const [email,setEmail]=useState("");
+  const [password,setPassword]=useState("");
+  const [confirmation,setConfirmation]=useState("");
+  const [error,setError]=useState("");
+  const [busy,setBusy]=useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError("");
+
+    if (password !== confirmation) {
+      setError("Konfirmasi password tidak sama.");
+      setBusy(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15000);
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({name, email, password}),
+        credentials: "same-origin",
+        cache: "no-store",
+        signal: controller.signal,
+      });
+
+      const contentType = response.headers.get("content-type") || "";
+      const data = contentType.includes("application/json")
+        ? await response.json()
+        : {};
+
+      if (!response.ok) {
+        setError(data.error || "Registrasi gagal. Coba lagi.");
+        return;
+      }
+
+      router.push("/booking");
+      router.refresh();
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        setError("Server terlalu lama merespons. Periksa koneksi/database lalu coba lagi.");
+      } else {
+        setError("Tidak dapat terhubung ke server. Coba lagi.");
+      }
+    } finally {
+      window.clearTimeout(timeout);
+      setBusy(false);
+    }
+  }
+
+  return <form onSubmit={submit} className="space-y-5 px-5 py-6 sm:px-8 sm:py-8">
+    {error&&<div className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</div>}
+    <Field label="Nama lengkap"><input className="input" value={name} onChange={e=>setName(e.target.value)} autoComplete="name" required /></Field>
+    <Field label="Email"><input className="input" type="email" value={email} onChange={e=>setEmail(e.target.value)} autoComplete="email" required /></Field>
+    <Field label="Password"><input className="input" type="password" value={password} onChange={e=>setPassword(e.target.value)} autoComplete="new-password" minLength={8} required /></Field>
+    <Field label="Konfirmasi password"><input className="input" type="password" value={confirmation} onChange={e=>setConfirmation(e.target.value)} autoComplete="new-password" minLength={8} required /></Field>
+    <button disabled={busy} className="w-full rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white disabled:opacity-50">{busy?"Membuat akun...":"Buat akun dan lanjutkan"}</button>
+    <p className="text-center text-sm text-slate-500">Sudah punya akun? <a href="/login" className="font-bold text-primary">Masuk</a></p>
+  </form>;
 }
 
 function Field({label,children}:{label:string;children:React.ReactNode}){return <label className="block"><span className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">{label}</span>{children}</label>}
