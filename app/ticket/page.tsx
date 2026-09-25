@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import QRCode from "qrcode";
-import { headers } from "next/headers";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -17,12 +16,15 @@ export default async function TicketPage({ searchParams }: { searchParams: Promi
   });
   if (!ticket) redirect("/my-tickets");
 
-  const requestHeaders = await headers();
-  const host = requestHeaders.get("x-forwarded-host") || requestHeaders.get("host");
-  const protocol = requestHeaders.get("x-forwarded-proto") || "https";
-  const baseUrl = host
-    ? `${protocol}://${host}`
-    : (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "");
+  // QR codes must always point to the public production origin, never the
+  // current Preview/deployment hostname. Otherwise scanning a Preview QR can
+  // trigger Vercel Deployment Protection and ask the customer to log in.
+  const configuredAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  const vercelProductionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  const baseUrl = (
+    configuredAppUrl ||
+    (vercelProductionUrl ? `https://${vercelProductionUrl}` : "http://localhost:3000")
+  ).replace(/\/$/, "");
 
   const verifyUrl = `${baseUrl}/ticket/verify?ticket=${encodeURIComponent(ticket.ticketId)}`;
   const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
