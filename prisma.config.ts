@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -7,6 +7,9 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env.DIRECT_URL || env("DATABASE_URL"),
+    // `prisma generate` does not connect to the database. Keep the URL
+    // optional here so CI/CD installs can generate the client before runtime
+    // database credentials are injected.
+    url: process.env.DIRECT_URL || process.env.DATABASE_URL || "",
   },
 });
