@@ -6,11 +6,13 @@ import { prisma } from "@/lib/prisma";
 const COOKIE = "sm_session";
 const MAX_AGE = 2 * 60 * 60;
 const REMEMBER_MAX_AGE = 30 * 24 * 60 * 60;
-const authSecret = process.env.AUTH_SECRET;
-if (!authSecret || authSecret.length < 32) {
-  throw new Error("AUTH_SECRET must be configured with at least 32 characters.");
+function getSecret() {
+  const authSecret = process.env.AUTH_SECRET;
+  if (!authSecret || authSecret.length < 32) {
+    throw new Error("AUTH_SECRET must be configured with at least 32 characters.");
+  }
+  return new TextEncoder().encode(authSecret);
 }
-const secret = new TextEncoder().encode(authSecret);
 
 export type SessionUser = {
   id: number;
@@ -27,7 +29,7 @@ export async function createSession(userId: number, remember = false) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${maxAge}s`)
-    .sign(secret);
+    .sign(getSecret());
 
   const store = await cookies();
   store.set(COOKIE, token, {
@@ -44,7 +46,7 @@ export async function refreshSession(userId: number) {
   const token = (await cookies()).get(COOKIE)?.value;
   if (token) {
     try {
-      const { payload } = await jwtVerify(token, secret);
+      const { payload } = await jwtVerify(token, getSecret());
       remember = payload.remember === true;
     } catch {
       return;
