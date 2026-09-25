@@ -21,6 +21,8 @@ export default async function MyTicketsPage() {
     return departure < today;
   };
 
+  // A scanned ticket is no longer an active boarding pass.
+  // It belongs in order history together with cancelled/expired tickets.
   const active = tickets.filter(
     (ticket) =>
       !isExpired(ticket) &&
@@ -35,7 +37,13 @@ export default async function MyTicketsPage() {
       isExpired(ticket),
   );
 
-  function TicketCard({ ticket }: { ticket: (typeof tickets)[number] }) {
+  function TicketCard({
+    ticket,
+    historyCard = false,
+  }: {
+    ticket: (typeof tickets)[number];
+    historyCard?: boolean;
+  }) {
     const expired = isExpired(ticket);
     const verified = ticket.status === "scanned";
     const cancelled = ticket.status === "cancelled";
@@ -54,22 +62,43 @@ export default async function MyTicketsPage() {
         ? "bg-slate-100 text-slate-500"
         : "bg-amber-100 text-amber-700";
 
+    const cardClass = verified
+      ? "rounded-3xl bg-white p-5 shadow-sm ring-2 ring-green-100"
+      : historyCard
+        ? "rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-100"
+        : "rounded-3xl bg-white p-5 shadow-sm";
+
     return (
-      <article className="rounded-3xl bg-white p-5 shadow-sm">
+      <article className={cardClass}>
+        {verified && historyCard && (
+          <div className="mb-4 flex items-center gap-2 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-800">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-600 text-xs text-white">
+              ✓
+            </span>
+            Tiket sudah digunakan dan terverifikasi
+          </div>
+        )}
+
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="font-black text-primary">
               {ticket.origin} → {ticket.destination}
             </p>
             <p className="mt-1 text-sm text-slate-500">
-              {ticket.passengerName} · {ticket.departureDate.toLocaleDateString("id-ID")}
+              {ticket.passengerName} ·{" "}
+              {ticket.departureDate.toLocaleDateString("id-ID")}
             </p>
             <p className="mt-1 text-xs text-slate-400">
               {ticket.vehiclePlate || ticket.vehicle || "Passenger"}
             </p>
+
             {verified && ticket.scannedAt && (
               <p className="mt-2 text-xs font-semibold text-green-700">
-                Diverifikasi {ticket.scannedAt.toLocaleString("id-ID")}
+                Diverifikasi{" "}
+                {ticket.scannedAt.toLocaleString("id-ID", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
               </p>
             )}
           </div>
@@ -86,7 +115,11 @@ export default async function MyTicketsPage() {
 
         <Link
           href={"/ticket?ticket=" + ticket.ticketId}
-          className="mt-4 inline-block rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white"
+          className={
+            verified
+              ? "mt-4 inline-block rounded-xl bg-green-700 px-4 py-2 text-xs font-bold text-white"
+              : "mt-4 inline-block rounded-xl bg-primary px-4 py-2 text-xs font-bold text-white"
+          }
         >
           Lihat Tiket
         </Link>
@@ -148,7 +181,11 @@ export default async function MyTicketsPage() {
               {history.length ? (
                 <div className="space-y-4">
                   {history.map((ticket) => (
-                    <TicketCard key={ticket.ticketId} ticket={ticket} />
+                    <TicketCard
+                      key={ticket.ticketId}
+                      ticket={ticket}
+                      historyCard
+                    />
                   ))}
                 </div>
               ) : (
