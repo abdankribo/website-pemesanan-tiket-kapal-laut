@@ -214,6 +214,17 @@ function VerificationResult({
   primaryLabel: string;
 }) {
   const success = tone === "success";
+  const verifiedAgain = success && alreadyVerified;
+
+  const headerClass = success
+    ? "bg-[#075985] px-6 py-8 text-center text-white sm:px-10 sm:py-10"
+    : "bg-[#991b1b] px-6 py-8 text-center text-white sm:px-10 sm:py-10";
+
+  const iconClass = success
+    ? "bg-[#d1fae5] text-[#065f46]"
+    : "bg-[#fee2e2] text-[#991b1b]";
+
+  const statusClass = success ? "text-[#047857]" : "text-[#b42318]";
 
   return (
     <main
@@ -236,8 +247,8 @@ function VerificationResult({
           <div
             className={
               success
-                ? "rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-primary shadow-sm"
-                : "rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-primary shadow-sm"
+                ? "rounded-full bg-[#ecfdf5] px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-[#065f46] shadow-sm"
+                : "rounded-full bg-[#fef2f2] px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-[#991b1b] shadow-sm"
             }
           >
             Scan Result
@@ -247,18 +258,17 @@ function VerificationResult({
         <section
           className={
             success
-              ? "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-[#27F5F5]/30"
-              : "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-[#00B4FF]/25"
+              ? "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-[#10b981]/35"
+              : "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-[#ef4444]/30"
           }
         >
           <div
-            className={
-              success
-                ? "bg-[#003169] px-6 py-8 text-center text-white sm:px-10 sm:py-10"
-                : "bg-[#003169] px-6 py-8 text-center text-white sm:px-10 sm:py-10"
-            }
+            className={headerClass}
           >
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white text-5xl shadow-lg">
+            <div
+              className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full text-5xl font-black shadow-lg ${iconClass}`}
+              aria-hidden="true"
+            >
               {success ? "✓" : "!"}
             </div>
 
@@ -267,7 +277,7 @@ function VerificationResult({
                 ? alreadyVerified
                   ? "Sudah tercatat"
                   : "Scan berhasil"
-                : "Perhatian"}
+                : "Scan gagal"}
             </p>
 
             <h1 className="mt-2 text-2xl font-black leading-tight sm:text-3xl">
@@ -322,11 +332,7 @@ function VerificationResult({
                     Status
                   </p>
                   <p
-                    className={
-                      success
-                        ? "mt-1 font-black text-primary"
-                        : "mt-1 font-black text-primary"
-                    }
+                    className={`mt-1 font-black ${statusClass}`}
                   >
                     {success ? "TERVERIFIKASI" : "TIDAK VALID"}
                   </p>
@@ -362,8 +368,8 @@ function VerificationResult({
             </div>
 
             {success && (
-              <div className="mt-4 rounded-2xl bg-[#27F5F5]/10 px-4 py-3 text-center text-sm font-bold text-primary">
-                Tiket sudah dipindahkan ke <b>Riwayat Pesanan</b>.
+              <div className="mt-4 rounded-2xl border border-[#10b981]/20 bg-[#ecfdf5] px-4 py-3 text-center text-sm font-bold text-[#065f46]">
+                ✓ Tiket sudah dipindahkan ke <b>Riwayat Pesanan</b>.
               </div>
             )}
 
