@@ -215,6 +215,12 @@ function VerificationResult({
 }) {
   const success = tone === "success";
 
+  const headerClass = success
+    ? "bg-[#075985] px-6 py-8 text-center text-white sm:px-10 sm:py-10"
+    : "bg-[#991b1b] px-6 py-8 text-center text-white sm:px-10 sm:py-10";
+
+  const statusClass = success ? "text-[#047857]" : "text-[#b42318]";
+
   return (
     <main
       className={
@@ -236,8 +242,8 @@ function VerificationResult({
           <div
             className={
               success
-                ? "rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-primary shadow-sm"
-                : "rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-primary shadow-sm"
+                ? "rounded-full bg-[#ecfdf5] px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-[#065f46] shadow-sm"
+                : "rounded-full bg-[#fef2f2] px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-[#991b1b] shadow-sm"
             }
           >
             Scan Result
@@ -247,19 +253,52 @@ function VerificationResult({
         <section
           className={
             success
-              ? "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-[#27F5F5]/30"
-              : "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-[#00B4FF]/25"
+              ? "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-[#10b981]/35"
+              : "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-[#ef4444]/30"
           }
         >
-          <div
-            className={
-              success
-                ? "bg-[#003169] px-6 py-8 text-center text-white sm:px-10 sm:py-10"
-                : "bg-[#003169] px-6 py-8 text-center text-white sm:px-10 sm:py-10"
-            }
-          >
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white text-5xl shadow-lg">
-              {success ? "✓" : "!"}
+          <div className={headerClass}>
+            <div
+              className={
+                success
+                  ? "mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-[#6ee7b7] via-[#10b981] to-[#047857] p-2 shadow-[0_12px_30px_rgba(16,185,129,0.35)] ring-4 ring-[#a7f3d0]/45"
+                  : "mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-[#fca5a5] via-[#ef4444] to-[#b91c1c] p-2 shadow-[0_12px_30px_rgba(239,68,68,0.3)] ring-4 ring-[#fecaca]/45"
+              }
+              aria-hidden="true"
+            >
+              <span
+                className={
+                  success
+                    ? "flex h-full w-full items-center justify-center rounded-full bg-[#064e3b]"
+                    : "flex h-full w-full items-center justify-center rounded-full bg-[#7f1d1d]"
+                }
+              >
+                {success ? (
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-11 w-11 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m5 12 4.5 4.5L19 7" />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-11 w-11 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                  >
+                    <path d="M12 7v6" />
+                    <path d="M12 17h.01" />
+                  </svg>
+                )}
+              </span>
             </div>
 
             <p className="mt-5 text-xs font-black uppercase tracking-[0.28em] opacity-80">
@@ -267,7 +306,7 @@ function VerificationResult({
                 ? alreadyVerified
                   ? "Sudah tercatat"
                   : "Scan berhasil"
-                : "Perhatian"}
+                : "Scan gagal"}
             </p>
 
             <h1 className="mt-2 text-2xl font-black leading-tight sm:text-3xl">
@@ -321,13 +360,7 @@ function VerificationResult({
                   <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
                     Status
                   </p>
-                  <p
-                    className={
-                      success
-                        ? "mt-1 font-black text-primary"
-                        : "mt-1 font-black text-primary"
-                    }
-                  >
+                  <p className={`mt-1 font-black ${statusClass}`}>
                     {success ? "TERVERIFIKASI" : "TIDAK VALID"}
                   </p>
                 </div>
@@ -362,8 +395,8 @@ function VerificationResult({
             </div>
 
             {success && (
-              <div className="mt-4 rounded-2xl bg-[#27F5F5]/10 px-4 py-3 text-center text-sm font-bold text-primary">
-                Tiket sudah dipindahkan ke <b>Riwayat Pesanan</b>.
+              <div className="mt-4 rounded-2xl border border-[#10b981]/20 bg-[#ecfdf5] px-4 py-3 text-center text-sm font-bold text-[#065f46]">
+                ✓ Tiket sudah dipindahkan ke <b>Riwayat Pesanan</b>.
               </div>
             )}
 
