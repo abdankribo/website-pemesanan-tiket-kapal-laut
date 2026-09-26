@@ -105,7 +105,8 @@ verifyUrl.searchParams.set("ticket", ticketId);
 const verify = await fetch(verifyUrl);
 assert(verify.status === 200, "Ticket verification failed: HTTP " + verify.status);
 const verifyHtml = await verify.text();
-assert(verifyHtml.includes("Verified"), "Ticket verification did not report Verified");
+assert(verifyHtml.includes("TIKET BERHASIL DIVERIFIKASI"), "Ticket verification did not report success");
+assert(verifyHtml.includes("Tiket sudah dipindahkan ke"), "Ticket verification did not report history transfer");
 
 const myTickets = await fetch(base + "/my-tickets", { headers: { Cookie: persistentCookie } });
 assert(myTickets.status === 200, "My Tickets failed: HTTP " + myTickets.status);
