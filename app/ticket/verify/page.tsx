@@ -219,8 +219,8 @@ function VerificationResult({
     <main
       className={
         success
-          ? "min-h-screen bg-[#eef8f1] px-4 py-6 sm:py-10"
-          : "min-h-screen bg-[#fff1f1] px-4 py-6 sm:py-10"
+          ? "min-h-screen bg-[#effdff] px-4 py-6 sm:py-10"
+          : "min-h-screen bg-[#f4f9fc] px-4 py-6 sm:py-10"
       }
     >
       <div className="mx-auto max-w-xl">
@@ -236,8 +236,8 @@ function VerificationResult({
           <div
             className={
               success
-                ? "rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-green-700 shadow-sm"
-                : "rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-red-700 shadow-sm"
+                ? "rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-primary shadow-sm"
+                : "rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-primary shadow-sm"
             }
           >
             Scan Result
@@ -247,15 +247,15 @@ function VerificationResult({
         <section
           className={
             success
-              ? "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-green-100"
-              : "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-red-100"
+              ? "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-[#27F5F5]/30"
+              : "overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-[#00B4FF]/25"
           }
         >
           <div
             className={
               success
-                ? "bg-[#087a3d] px-6 py-8 text-center text-white sm:px-10 sm:py-10"
-                : "bg-[#b42318] px-6 py-8 text-center text-white sm:px-10 sm:py-10"
+                ? "bg-[#003169] px-6 py-8 text-center text-white sm:px-10 sm:py-10"
+                : "bg-[#003169] px-6 py-8 text-center text-white sm:px-10 sm:py-10"
             }
           >
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white text-5xl shadow-lg">
@@ -274,7 +274,7 @@ function VerificationResult({
               {title}
             </h1>
 
-            <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-6 text-white/90">
+            <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-6 text-blue-100">
               {message}
             </p>
           </div>
@@ -324,8 +324,8 @@ function VerificationResult({
                   <p
                     className={
                       success
-                        ? "mt-1 font-black text-green-700"
-                        : "mt-1 font-black text-red-700"
+                        ? "mt-1 font-black text-primary"
+                        : "mt-1 font-black text-primary"
                     }
                   >
                     {success ? "TERVERIFIKASI" : "TIDAK VALID"}
@@ -362,7 +362,7 @@ function VerificationResult({
             </div>
 
             {success && (
-              <div className="mt-4 rounded-2xl bg-green-50 px-4 py-3 text-center text-sm font-bold text-green-800">
+              <div className="mt-4 rounded-2xl bg-[#27F5F5]/10 px-4 py-3 text-center text-sm font-bold text-primary">
                 Tiket sudah dipindahkan ke <b>Riwayat Pesanan</b>.
               </div>
             )}
@@ -386,7 +386,7 @@ function VerificationResult({
 
 function VerificationError({ message }: { message: string }) {
   return (
-    <main className="min-h-screen bg-[#fff1f1] px-4 py-6 sm:py-10">
+    <main className="min-h-screen bg-[#f4f9fc] px-4 py-6 sm:py-10">
       <div className="mx-auto max-w-xl">
         <div className="mb-5 px-1">
           <p className="text-[11px] font-black uppercase tracking-[0.28em] text-slate-500">
@@ -397,16 +397,16 @@ function VerificationError({ message }: { message: string }) {
           </p>
         </div>
 
-        <section className="overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-red-100">
-          <div className="bg-[#b42318] px-6 py-10 text-center text-white sm:px-10">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white text-4xl font-black text-red-700 shadow-lg">
+        <section className="overflow-hidden rounded-[2rem] bg-white shadow-xl ring-1 ring-[#00B4FF]/25">
+          <div className="bg-[#003169] px-6 py-10 text-center text-white sm:px-10">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white text-4xl font-black text-primary shadow-lg">
               !
             </div>
             <p className="mt-5 text-xs font-black uppercase tracking-[0.28em] text-white/80">
               Scan Gagal
             </p>
             <h1 className="mt-2 text-3xl font-black">TIKET TIDAK VALID</h1>
-            <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-6 text-white/90">
+            <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-6 text-blue-100">
               {message}
             </p>
           </div>
