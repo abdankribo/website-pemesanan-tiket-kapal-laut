@@ -1,20 +1,5 @@
 import Link from "next/link";
-
 export default async function ResetPasswordPage({searchParams}:{searchParams:Promise<{token?:string;email?:string}>}) {
-  const p=await searchParams;
-  return <main className="min-h-screen bg-slate-100 px-4 py-8 sm:flex sm:items-center sm:justify-center">
-    <section className="mx-auto w-full max-w-md">
-      <Link href="/login" className="mb-8 inline-flex text-sm font-bold text-primary">← Kembali ke login</Link>
-      <div className="rounded-3xl bg-white p-6 shadow-sm sm:p-8">
-        <h1 className="text-2xl font-black text-primary">Reset Password</h1>
-        <form action="/api/auth/reset-password" method="POST" className="mt-6 space-y-4">
-          <input type="hidden" name="token" value={p.token||""}/>
-          <input className="input" name="email" type="email" defaultValue={p.email||""} placeholder="nama@email.com" required />
-          <input className="input" name="password" type="password" placeholder="Password baru (min. 8 karakter)" minLength={8} required />
-          <input className="input" name="password_confirmation" type="password" placeholder="Ulangi password" minLength={8} required />
-          <button className="w-full rounded-xl bg-primary px-5 py-3 font-bold text-white">Ubah Password</button>
-        </form>
-      </div>
-    </section>
-  </main>;
+ const p=await searchParams;
+ return <main className="site-gradient min-h-screen px-4 py-8 sm:flex sm:items-center sm:justify-center"><section className="relative mx-auto w-full max-w-md"><Link href="/login" className="mb-6 inline-flex text-sm font-bold text-white/85">← Kembali ke login</Link><div className="aesthetic-card rounded-[2rem] p-6 sm:p-8"><div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E0FF00] text-primary"><span className="material-symbols-outlined">vpn_key</span></div><h1 className="mt-5 text-2xl font-black text-primary">Reset Password</h1><form action="/api/auth/reset-password" method="POST" className="mt-6 space-y-4"><input type="hidden" name="token" value={p.token||""}/><input className="input" name="email" type="email" defaultValue={p.email||""} placeholder="nama@email.com" required/><input className="input" name="password" type="password" placeholder="Password baru (min. 8 karakter)" minLength={8} required/><input className="input" name="password_confirmation" type="password" placeholder="Ulangi password" minLength={8} required/><button className="primary-btn w-full rounded-2xl px-5 py-3 font-bold">Ubah Password</button></form></div></section></main>;
 }
