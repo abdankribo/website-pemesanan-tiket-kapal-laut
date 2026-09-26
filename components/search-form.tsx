@@ -32,8 +32,8 @@ export default function SearchForm() {
       </div>
       {error && <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-xs font-bold text-red-700">{error}</p>}
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Field label="Dari"><select value={origin} onChange={e => { setOrigin(e.target.value); if (e.target.value === destination) setDestination(e.target.value === "ujung" ? "kamal" : "ujung"); }} className="input"><option value="ujung">Ujung Port</option><option value="kamal">Kamal Port</option></select></Field>
-        <Field label="Ke"><select value={destination} onChange={e => { setDestination(e.target.value); if (e.target.value === origin) setOrigin(e.target.value === "ujung" ? "kamal" : "ujung"); }} className="input"><option value="kamal">Kamal Port</option><option value="ujung">Ujung Port</option></select></Field>
+        <Field label="Dari"><select value={origin} onChange={e => { setOrigin(e.target.value); if (e.target.value === destination) setDestination(e.target.value === "ujung" ? "kamal" : "ujung"); }} className="input select-input"><option value="ujung">Ujung Port</option><option value="kamal">Kamal Port</option></select></Field>
+        <Field label="Ke"><select value={destination} onChange={e => { setDestination(e.target.value); if (e.target.value === origin) setOrigin(e.target.value === "ujung" ? "kamal" : "ujung"); }} className="input select-input"><option value="kamal">Kamal Port</option><option value="ujung">Ujung Port</option></select></Field>
         <Field label="Tanggal"><input className="input" type="date" min={today} value={date} onChange={e => setDate(e.target.value)} required /></Field>
         <Field label="Layanan"><select className="input" value={serviceType} onChange={e => setServiceType(e.target.value)}><option value="passenger">Passenger Only</option><option value="motor">Motor</option><option value="car">Mobil</option></select></Field>
       </div>
