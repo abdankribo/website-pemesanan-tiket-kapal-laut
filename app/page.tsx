@@ -32,34 +32,34 @@ export default async function LandingPage() {
       </header>
 
       <main className="pt-24">
-        <section className="site-gradient soft-grid relative overflow-hidden px-4 pb-36 pt-20 text-white sm:px-6 sm:pt-28">
+        <section className="hero-section relative overflow-hidden px-4 pb-36 pt-20 text-white sm:px-6 sm:pt-28">
           <span className="hero-orb left-[8%] top-28 h-24 w-24 bg-[#27F5F5]/30" />
           <span className="hero-orb right-[10%] top-40 h-36 w-36 bg-[#d6ed00]/15" />
           <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.1fr_.9fr]">
             <div className="max-w-3xl">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.22em] text-[#00a8b0] backdrop-blur">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/8 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.22em] text-[#27F5F5] backdrop-blur">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#d6ed00]" />
                 Smart Ferry Booking
               </div>
               <h1 className="text-5xl font-black leading-[.95] tracking-[-.055em] sm:text-6xl lg:text-8xl">
                 Menyeberang lebih
-                <span className="mt-2 block text-[#00a8b0]">simple & nyaman.</span>
+                <span className="mt-2 block text-[#27F5F5]">simple & nyaman.</span>
               </h1>
-              <p className="mt-7 max-w-xl text-base leading-7 text-blue-100 sm:text-lg">
+              <p className="mt-7 max-w-xl text-base leading-7 text-white/90 sm:text-lg">
                 Pesan tiket Surabaya–Madura, simpan boarding pass digital, dan nikmati alur perjalanan yang ringkas dari satu akun.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href={user ? "/booking" : "/login"} className="accent-btn rounded-2xl px-6 py-4 text-sm font-black uppercase tracking-wider">
                   Mulai Pesan <span className="ml-2">→</span>
                 </Link>
-                <Link href={user ? "/my-tickets" : "/register"} className="rounded-2xl border border-white/15 bg-white/10 px-6 py-4 text-sm font-bold text-white backdrop-blur transition hover:bg-white/15">
+                <Link href={user ? "/my-tickets" : "/register"} className="rounded-2xl border border-white/30 bg-white/10 px-6 py-4 text-sm font-bold text-white backdrop-blur transition hover:bg-white/15">
                   {user ? "Lihat Tiket" : "Buat Akun"}
                 </Link>
               </div>
-              <div className="mt-10 flex flex-wrap gap-6 text-xs font-bold text-blue-100">
-                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[#00a8b0]">bolt</span>Booking cepat</span>
-                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[#00a8b0]">qr_code_2</span>QR digital</span>
-                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[#00a8b0]">verified</span>Verifikasi mudah</span>
+              <div className="mt-10 flex flex-wrap gap-6 text-xs font-bold text-white/90">
+                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[#27F5F5]">bolt</span>Booking cepat</span>
+                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[#27F5F5]">qr_code_2</span>QR digital</span>
+                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[#27F5F5]">verified</span>Verifikasi mudah</span>
               </div>
             </div>
 
