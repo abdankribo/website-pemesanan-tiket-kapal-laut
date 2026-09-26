@@ -1,18 +1,4 @@
 import Link from "next/link";
-
 export default function ForgotPasswordPage({searchParams}:{searchParams:Promise<{sent?:string}>}) {
-  return <main className="min-h-screen bg-slate-100 px-4 py-8 sm:flex sm:items-center sm:justify-center">
-    <section className="mx-auto w-full max-w-md">
-      <Link href="/login" className="mb-8 inline-flex text-sm font-bold text-primary">← Kembali ke login</Link>
-      <div className="rounded-3xl bg-white p-6 shadow-sm sm:p-8">
-        <h1 className="text-2xl font-black text-primary">Lupa Password</h1>
-        <p className="mt-2 text-sm text-slate-500">Masukkan email akun Anda untuk menerima link reset password.</p>
-        <form action="/api/auth/forgot-password" method="POST" className="mt-6 space-y-4">
-          <input className="input" name="email" type="email" placeholder="nama@email.com" required />
-          <button className="w-full rounded-xl bg-primary px-5 py-3 font-bold text-white">Kirim Link Reset</button>
-        </form>
-        <p className="mt-5 text-xs text-slate-500">Jika email terdaftar, link reset akan dikirim. Untuk deployment production, isi RESEND_API_KEY dan email pengirim.</p>
-      </div>
-    </section>
-  </main>;
+ return <main className="site-gradient min-h-screen px-4 py-8 sm:flex sm:items-center sm:justify-center"><section className="relative mx-auto w-full max-w-md"><Link href="/login" className="mb-6 inline-flex text-sm font-bold text-white/85">← Kembali ke login</Link><div className="aesthetic-card rounded-[2rem] p-6 sm:p-8"><div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E0FF00] text-primary"><span className="material-symbols-outlined">lock_reset</span></div><h1 className="mt-5 text-2xl font-black text-primary">Lupa Password</h1><p className="mt-2 text-sm leading-6 text-slate-500">Masukkan email akun Anda untuk menerima link reset password.</p><form action="/api/auth/forgot-password" method="POST" className="mt-6 space-y-4"><input className="input" name="email" type="email" placeholder="nama@email.com" required/><button className="primary-btn w-full rounded-2xl px-5 py-3 font-bold">Kirim Link Reset</button></form><p className="mt-5 text-xs leading-5 text-slate-500">Jika email terdaftar, link reset akan dikirim.</p></div></section></main>;
 }
