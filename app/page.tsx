@@ -34,16 +34,16 @@ export default async function LandingPage() {
       <main className="pt-24">
         <section className="site-gradient soft-grid relative overflow-hidden px-4 pb-36 pt-20 text-white sm:px-6 sm:pt-28">
           <span className="hero-orb left-[8%] top-28 h-24 w-24 bg-[#27F5F5]/30" />
-          <span className="hero-orb right-[10%] top-40 h-36 w-36 bg-[#E0FF00]/15" />
+          <span className="hero-orb right-[10%] top-40 h-36 w-36 bg-[#d6ed00]/15" />
           <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.1fr_.9fr]">
             <div className="max-w-3xl">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.22em] text-[#27F5F5] backdrop-blur">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#E0FF00]" />
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.22em] text-[#00a8b0] backdrop-blur">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#d6ed00]" />
                 Smart Ferry Booking
               </div>
               <h1 className="text-5xl font-black leading-[.95] tracking-[-.055em] sm:text-6xl lg:text-8xl">
                 Menyeberang lebih
-                <span className="mt-2 block text-[#27F5F5]">simple & nyaman.</span>
+                <span className="mt-2 block text-[#00a8b0]">simple & nyaman.</span>
               </h1>
               <p className="mt-7 max-w-xl text-base leading-7 text-blue-100 sm:text-lg">
                 Pesan tiket Surabaya–Madura, simpan boarding pass digital, dan nikmati alur perjalanan yang ringkas dari satu akun.
@@ -57,9 +57,9 @@ export default async function LandingPage() {
                 </Link>
               </div>
               <div className="mt-10 flex flex-wrap gap-6 text-xs font-bold text-blue-100">
-                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[#27F5F5]">bolt</span>Booking cepat</span>
-                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[#27F5F5]">qr_code_2</span>QR digital</span>
-                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[#27F5F5]">verified</span>Verifikasi mudah</span>
+                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[#00a8b0]">bolt</span>Booking cepat</span>
+                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[#00a8b0]">qr_code_2</span>QR digital</span>
+                <span className="flex items-center gap-2"><span className="material-symbols-outlined text-[#00a8b0]">verified</span>Verifikasi mudah</span>
               </div>
             </div>
 
@@ -68,7 +68,7 @@ export default async function LandingPage() {
                 <div className="rounded-[1.5rem] bg-primary p-6 text-white">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-black uppercase tracking-[.25em] text-blue-200">Digital Boarding Pass</span>
-                    <span className="rounded-full bg-[#E0FF00] px-2.5 py-1 text-[9px] font-black text-primary">READY</span>
+                    <span className="rounded-full bg-[#d6ed00] px-2.5 py-1 text-[9px] font-black text-primary">READY</span>
                   </div>
                   <div className="mt-10 flex items-center gap-4">
                     <div>
@@ -77,7 +77,7 @@ export default async function LandingPage() {
                     </div>
                     <div className="flex-1 text-center">
                       <div className="h-px bg-white/20" />
-                      <span className="relative -top-3 bg-primary px-2 text-[#27F5F5]">⛴</span>
+                      <span className="relative -top-3 bg-primary px-2 text-[#00a8b0]">⛴</span>
                     </div>
                     <div className="text-right">
                       <p className="text-3xl font-black">KML</p>
@@ -90,7 +90,7 @@ export default async function LandingPage() {
                   </div>
                 </div>
                 <div className="mt-4 flex items-center justify-between px-1 text-xs font-bold text-slate-500">
-                  <span>Seamless journey</span><span className="text-[#00B4FF]">Surabaya → Madura</span>
+                  <span>Seamless journey</span><span className="text-[#0079ad]">Surabaya → Madura</span>
                 </div>
               </div>
             </div>
@@ -103,7 +103,7 @@ export default async function LandingPage() {
 
         <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="max-w-2xl">
-            <p className="text-xs font-black uppercase tracking-[.25em] text-[#00B4FF]">Designed for flow</p>
+            <p className="text-xs font-black uppercase tracking-[.25em] text-[#0079ad]">Designed for flow</p>
             <h2 className="mt-2 text-3xl font-black tracking-tight text-primary sm:text-4xl">Semua terasa lebih ringan.</h2>
             <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">Antarmuka dibuat fokus pada hal yang penting: pilih perjalanan, isi data, bayar, lalu gunakan QR saat boarding.</p>
           </div>
@@ -115,8 +115,8 @@ export default async function LandingPage() {
             ].map(([no,title,desc,icon]) => (
               <div key={no} className="interactive-card aesthetic-card rounded-3xl p-6">
                 <div className="flex items-center justify-between">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-[#27F5F5]"><span className="material-symbols-outlined">{icon}</span></span>
-                  <span className="text-xs font-black tracking-widest text-[#00B4FF]">{no}</span>
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-[#00a8b0]"><span className="material-symbols-outlined">{icon}</span></span>
+                  <span className="text-xs font-black tracking-widest text-[#0079ad]">{no}</span>
                 </div>
                 <h3 className="mt-7 text-xl font-black text-primary">{title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{desc}</p>
@@ -129,7 +129,7 @@ export default async function LandingPage() {
           <div className="site-gradient overflow-hidden rounded-[2rem] p-7 text-white sm:p-10">
             <div className="grid items-center gap-8 md:grid-cols-[1fr_auto]">
               <div>
-                <p className="text-xs font-black uppercase tracking-[.25em] text-[#27F5F5]">Your next crossing</p>
+                <p className="text-xs font-black uppercase tracking-[.25em] text-[#00a8b0]">Your next crossing</p>
                 <h2 className="mt-2 text-3xl font-black tracking-tight">Siap berangkat?</h2>
                 <p className="mt-2 max-w-xl text-sm leading-6 text-blue-100">Simpan tiket digital Anda dan akses perjalanan tanpa antre panjang.</p>
               </div>
