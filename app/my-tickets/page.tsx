@@ -137,9 +137,9 @@ export default async function MyTicketsPage() {
             </p>
             <h1 className="text-3xl font-black text-primary">My Tickets</h1>
           </div>
-          <Link href="/account" className="text-sm font-bold text-primary">
+          <div className="flex items-center gap-3"><Link href="/" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-primary">Dashboard</Link><Link href="/account" className="text-sm font-bold text-primary">
             Profile
-          </Link>
+          </Link></div>
         </div>
 
         {tickets.length === 0 ? (
