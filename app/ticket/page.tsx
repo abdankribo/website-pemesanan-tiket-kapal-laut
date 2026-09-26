@@ -38,6 +38,7 @@ export default async function TicketPage({ searchParams }: { searchParams: Promi
   return (
     <main className="min-h-screen bg-surface px-4 py-10 pb-24">
       <div className="mx-auto max-w-lg">
+        <div className="mb-4 flex justify-end"><Link href="/" className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-primary shadow-sm">Dashboard</Link></div>
         <div className="rounded-3xl bg-primary p-6 text-white shadow-xl">
           <p className="text-xs uppercase tracking-[.3em] text-blue-200">Your Boarding Pass</p>
           <h1 className="mt-2 text-3xl font-black">{ticket.origin} → {ticket.destination}</h1>
