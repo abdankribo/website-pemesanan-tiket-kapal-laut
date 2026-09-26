@@ -9,7 +9,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   const params = await searchParams;
 
   return <main className="min-h-screen bg-surface px-4 py-10 pb-24"><div className="mx-auto max-w-xl">
-    <div className="flex items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.3em] text-secondary">Account</p><h1 className="text-3xl font-black text-primary">Your Profile</h1></div><Link href="/my-tickets" className="rounded-xl bg-secondary px-4 py-2 text-sm font-bold text-white">My Tickets</Link></div>
+    <div className="flex items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.3em] text-secondary">Account</p><h1 className="text-3xl font-black text-primary">Your Profile</h1></div><div className="flex items-center gap-3"><Link href="/" className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-primary">Dashboard</Link><Link href="/my-tickets" className="rounded-xl bg-secondary px-4 py-2 text-sm font-bold text-white">My Tickets</Link></div></div>
     {params.saved === "1" && <p className="mt-5 rounded-xl bg-green-50 p-3 text-sm font-semibold text-green-700">Profil berhasil diperbarui.</p>}
     {params.error === "email" && <p className="mt-5 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">Email sudah digunakan akun lain.</p>}
     {params.error === "invalid" && <p className="mt-5 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">Periksa kembali data profil Anda.</p>}
