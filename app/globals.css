@@ -182,3 +182,21 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Hero contrast: keep the primary message on a consistently dark surface. */
+.hero-section {
+  background-color: #00264f;
+  background-image:
+    linear-gradient(rgb(0 180 255 / 3%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(0 180 255 / 4%) 1px, transparent 1px),
+    radial-gradient(circle at 84% 14%, rgb(39 245 245 / 14%), transparent 22rem),
+    radial-gradient(circle at 14% 86%, rgb(0 180 255 / 12%), transparent 24rem),
+    linear-gradient(135deg, #00264f 0%, #003b78 56%, #001f42 100%);
+  background-size: 32px 32px, 32px 32px, auto, auto, auto;
+  background-position: 0 0, 0 0, center, center, center;
+}
+
+.hero-section h1 {
+  text-shadow: 0 3px 24px rgb(0 20 45 / 28%);
+}
