@@ -12,7 +12,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
     <main className="min-h-screen px-4 py-10 pb-28">
       <div className="mx-auto max-w-xl">
         <header className="flex items-center justify-between gap-4">
-          <div><p className="text-xs font-black uppercase tracking-[.3em] text-[#00B4FF]">Account</p><h1 className="mt-1 text-3xl font-black text-primary">Profil Anda</h1><p className="mt-1 text-sm text-slate-500">Kelola data yang digunakan saat booking.</p></div>
+          <div><p className="text-xs font-black uppercase tracking-[.3em] text-[#0079ad]">Account</p><h1 className="mt-1 text-3xl font-black text-primary">Profil Anda</h1><p className="mt-1 text-sm text-slate-500">Kelola data yang digunakan saat booking.</p></div>
           <div className="hidden gap-2 sm:flex"><Link href="/" className="ghost-btn rounded-xl px-3 py-2 text-xs font-bold">Dashboard</Link><Link href="/my-tickets" className="primary-btn rounded-xl px-3 py-2 text-xs font-bold">Tiket Saya</Link></div>
         </header>
         {params.saved === "1" && <p className="mt-5 rounded-2xl bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">Profil berhasil diperbarui.</p>}
